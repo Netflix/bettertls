@@ -1,0 +1,109 @@
+body {
+  margin: 1em;
+  background: #e0e0e0;
+}
+
+#header {
+  margin-bottom: 1em;
+}
+#header h1 {
+  font-size: 4em;
+}
+.subtitle {
+  font-size: 2em;
+  font-style: italic;
+}
+#footer {
+  font-size: 0.8em;
+  width: 100%;
+  white-space: nowrap;
+}
+#footer .left {
+  display: inline-block;
+  text-align: left;
+  width: 50%;
+  white-space: normal;
+}
+#footer .right {
+  display: inline-block;
+  text-align: right;
+  width: 50%;
+  white-space: normal;
+}
+.ftitle {
+  font-size: 1.4em;
+  font-style: italic;
+}
+#footer .right .powered-by {
+  display: inline-block;
+  background: url("poweredby.svg") no-repeat scroll right top;
+  margin-top: 1em;
+  height: 1.5em;
+  width: 15em;
+}
+
+#mainLoader {
+  text-align: center;
+  background: #fff;
+  border-radius: 4px;
+  padding: 1em;
+}
+#mainLoader > img {
+  display: inline-block;
+}
+
+#mainTabs {
+  background: #fff;
+  border-radius: 4px;
+  padding: 1em;
+  overflow:hidden;
+}
+#mainTabs .nav {
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+  border-bottom: 1px solid #aaa;
+}
+
+.stats {
+  padding: 1em 0;
+}
+
+td.details-control {
+  cursor: pointer;
+  font-family: FontAwesome;
+}
+td.details-control:after {
+  content:"\f055";
+}
+tr.shown td.details-control:after {
+  content:"\f056";
+}
+tr.fail > td:nth-child(10) {
+  color: red;
+}
+tr.fail.false-negative > td:nth-child(10) {
+  font-weight: bold;
+}
+
+.divTable {
+  display: table;
+}
+.divTable > div {
+  display: table-row;
+}
+.divTable > div > div {
+  display: table-cell;
+}
+.divTable > div > div:first-child {
+  padding-right: 2em;
+}
+
+.testResultsLoading {
+  text-align: center;
+}
+.testResultsLoading > img {
+  display: inline-block;
+}
+.dataTables_wrapper {
+  overflow: auto;
+}

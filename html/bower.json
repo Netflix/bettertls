@@ -1,0 +1,23 @@
+{
+  "name": "bettertls",
+  "homepage": "https://github.com/Netflix/bettertls",
+  "authors": [
+    "Ian Haken <ihaken@netflix.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "Apache 2.0",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.1.1",
+    "datatables.net": "^2.1.1",
+    "datatables.net-dt": "^3.2.2",
+    "font-awesome": "^4.7.0"
+  }
+}
