@@ -42,6 +42,14 @@ body {
   width: 15em;
 }
 
+.noscript-notice {
+  text-align: center;
+  font-size: 1.4em;
+  background: #fff;
+  border-radius: 4px;
+  padding: 1em;
+}
+
 #mainLoader {
   text-align: center;
   background: #fff;
