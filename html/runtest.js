@@ -189,6 +189,7 @@ function generateTestTable(displayDiv, testResults) {
       { data: 'testResult' }
     ],
     "order": [[1, 'asc']],
+    "lengthMenu": [ [10, 25, 50, 100, 1000, -1], [10, 25, 50, 100, 1000, "All"] ],
     "createdRow": function( tr, data, dataIndex ) {
       if (!data.testPassed) {
         $(tr).addClass('fail');
