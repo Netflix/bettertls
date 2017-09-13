@@ -61,8 +61,8 @@ function runTests(userAgent, callback, finishedCallback) {
     }
     process.stdout.write("Running test " + testId + "/" + maxId + "\r");
 
-    var dnsUrl = 'https://' + config.hostname + ':' + (config.basePort+testId) + '/config.json';
-    var ipUrl = 'https://' + config.ip + ':' + (config.basePort+testId) + '/config.json';
+    var dnsUrl = 'https://' + config.hostname + ':' + (config.basePort+testId) + '/well-known.txt';
+    var ipUrl = 'https://' + config.ip + ':' + (config.basePort+testId) + '/well-known.txt';
 
     callback(dnsUrl, ipUrl, function(result) {
       testResults.results.push({

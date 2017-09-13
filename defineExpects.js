@@ -66,6 +66,14 @@ for (var i=0; i < manifest.certManifest.length; i++) {
       ncDnsStatus = WEAK_PASS;
     }
 
+    // If a common name is defined as the server's IP, it may be treated as a DNS name and have DNS name constraints applied against it.
+    if (certDef.commonName == config.ip
+        && (certDef.nameConstraints.whitelist.indexOf(config.hostSubtree) != -1
+          || certDef.nameConstraints.whitelist.indexOf(config.invalidHostSubtree) != -1)) {
+      descriptions.push("Although the common name is an IP, some implementations may apply DNS name constraints against it and thus fail validation.");
+      ncDnsStatus = WEAK_PASS;
+    }
+
     // Hard fail if there is a violation on the SAN values.
     if ((certDef.sans.indexOf(config.ip) != -1 && certDef.nameConstraints.whitelist.indexOf(config.invalidIpSubtree) != -1)
         || (certDef.sans.indexOf(config.ip) != -1 && certDef.nameConstraints.blacklist.indexOf(config.ipSubtree) != -1)
@@ -143,6 +151,11 @@ for (var i=0; i < manifest.certManifest.length; i++) {
     if (ncIpStatus != PASS) {
       expect.dns.expect = 'WEAK-OK';
       expect.dns.descriptions.push("Althought the IP address is not the subject name in question, it's name constraint violation may still cause this certificate to be rejected.");
+    }
+
+    if (certDef.commonName == config.hostname && certDef.sans.indexOf(config.hostname) == -1) {
+      expect.dns.expect = 'WEAK-OK';
+      expect.dns.descriptions.push("The DNS name for this certificate only exists in the common name. Some browsers (such as Chrome) have deprecated using the CN entirely and only use names from SAN extensions.");
     }
 
     if (certDef.commonName == config.hostname && certDef.sans.length > 0 && certDef.sans.indexOf(config.hostname) == -1) {
