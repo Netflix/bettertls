@@ -66,8 +66,8 @@ for (var i=0; i < manifest.certManifest.length; i++) {
       ncDnsStatus = WEAK_PASS;
     }
 
-    // If a common name is defined as the server's IP, it may be treated as a DNS name and have DNS name constraints applied against it.
-    if (certDef.commonName == config.ip
+    // If a common name is an IP, it may be treated as a DNS name and have DNS name constraints applied against it.
+    if ((certDef.commonName == config.ip || certDef.commonName == config.invalidIp)
         && (certDef.nameConstraints.whitelist.indexOf(config.hostSubtree) != -1
           || certDef.nameConstraints.whitelist.indexOf(config.invalidHostSubtree) != -1)) {
       descriptions.push("Although the common name is an IP, some implementations may apply DNS name constraints against it and thus fail validation.");
