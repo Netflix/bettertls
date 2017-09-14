@@ -23,11 +23,11 @@ if arg[1] == "--useragent" then
 	local http_version = require "http.version"
 	local luaossl = require "openssl"
 
-	print(string.format("%s, %s %s, %06x",
+	print(string.format("%s, %s %s, %s",
 		_VERSION,
 		http_version.name,
 		http_version.version,
-		luaossl.version()
+		luaossl.version(luaossl.SSLEAY_VERSION)
 	))
 	return os.exit(0)
 end
