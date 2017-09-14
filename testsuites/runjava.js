@@ -30,9 +30,7 @@ runner.runSystem('javac JavaTest.java', function(ignored) {
         result = JSON.parse(result);
         done([result.dnsResult, result.ipResult]);
       });
-    }, function(testResults) {
-      fs.writeFileSync('../html/results/java_1.8.0_111_linux.json', JSON.stringify(testResults));
-    });
+    }, '../html/results/java_1.8.0_111_linux.json');
   });
 });
 

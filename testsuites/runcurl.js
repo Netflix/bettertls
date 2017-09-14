@@ -24,10 +24,6 @@ const runner = require('./runner.js');
 runner.runSystem('curl --version', function(curlVersion) {
   var version = curlVersion.replace(/\n/g, " ");
   console.log("UserAgent: " + version);
-  runner.runTestsWithCmd(version, 'curl --cacert ../certificates/root.crt ${URL}',
-    function(testResults) {
-      fs.writeFileSync('../html/results/curl_7.50.1_linux.json', JSON.stringify(testResults));
-    }
-  );
+  runner.runTestsWithCmd(version, 'curl --cacert ../certificates/root.crt ${URL}', '../html/results/curl_7.50.1_linux.json');
 });
 

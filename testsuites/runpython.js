@@ -23,10 +23,6 @@ const runner = require('./runner.js');
 
 runner.runSystem('python python_test.py --useragent 2>&1', function(version) {
   console.log("UserAgent: " + version);
-  runner.runTestsWithCmd(version, 'python python_test.py ${URL}',
-    function(testResults) {
-      fs.writeFileSync('../html/results/python_2.7.13_linux.json', JSON.stringify(testResults));
-    }
-  );
+  runner.runTestsWithCmd(version, 'python python_test.py ${URL}', '../html/results/python_2.7.13_linux.json');
 });
 

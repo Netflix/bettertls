@@ -28,17 +28,17 @@ function runSystem(cmd, andThen) {
   });
 }
 
-function runTestsWithCmd(userAgent, cmdTemplate, finishedCallback) {
+function runTestsWithCmd(userAgent, cmdTemplate, resultsPath) {
   runTests(userAgent, function(dnsUrl, ipUrl, done) {
     child_process.exec(cmdTemplate.replace('${URL}', dnsUrl), {}, function(dnsError, dnsStdout, dnsStderr) {
       child_process.exec(cmdTemplate.replace('${URL}', ipUrl), {}, function(ipError, ipStdout, ipStderr) {
         done([dnsError == null, ipError == null]);
       });
     });
-  }, finishedCallback);
+  }, resultsPath);
 }
 
-function runTests(userAgent, callback, finishedCallback) {
+function runTests(userAgent, callback, resultsPath) {
   var config = JSON.parse(fs.readFileSync('../config.json'));
   var manifest = JSON.parse(fs.readFileSync('../certificates/manifest.json'));
   var maxId = 1;
@@ -53,25 +53,41 @@ function runTests(userAgent, callback, finishedCallback) {
     results: []
   };
 
+  if (fs.existsSync(resultsPath)) {
+    testResults = JSON.parse(fs.readFileSync(resultsPath));
+  }
+
   function doTest(testId) {
     if (testId > maxId) {
       process.stdout.write("\n");
-      finishedCallback(testResults);
+      fs.writeFileSync(resultsPath, JSON.stringify(testResults));
       return;
     }
     process.stdout.write("Running test " + testId + "/" + maxId + "\r");
 
-    var dnsUrl = 'https://' + config.hostname + ':' + (config.basePort+testId) + '/well-known.txt';
-    var ipUrl = 'https://' + config.ip + ':' + (config.basePort+testId) + '/well-known.txt';
-
-    callback(dnsUrl, ipUrl, function(result) {
-      testResults.results.push({
-        id: testId,
-        dnsResult: result[0],
-        ipResult: result[1]
-      });
+    var testAlreadyRun = false;
+    for (var i = 0; i < testResults.results.length; i++) {
+      if (testResults.results[i].id == testId) {
+        testAlreadyRun = true;
+        break;
+      }
+    }
+    if (testAlreadyRun) {
       doTest(testId+1);
-    });
+    } else {
+      var dnsUrl = 'https://' + config.hostname + ':' + (config.basePort+testId) + '/well-known.txt';
+      var ipUrl = 'https://' + config.ip + ':' + (config.basePort+testId) + '/well-known.txt';
+
+      callback(dnsUrl, ipUrl, function(result) {
+        testResults.results.push({
+          id: testId,
+          dnsResult: result[0],
+          ipResult: result[1]
+        });
+        fs.writeFileSync(resultsPath, JSON.stringify(testResults));
+        doTest(testId+1);
+      });
+    }
   }
 
   runSystem('lsb_release -d -s', function(osVersion) {

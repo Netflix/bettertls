@@ -23,9 +23,5 @@ const runner = require('./runner.js');
 
 runner.runSystem('lua lua_test.lua --useragent 2>&1', function(version) {
   console.log("UserAgent: " + version);
-  runner.runTestsWithCmd(version, 'lua lua_test.lua ${URL}',
-    function(testResults) {
-      fs.writeFileSync('../html/results/lua_linux.json', JSON.stringify(testResults));
-    }
-  );
+  runner.runTestsWithCmd(version, 'lua lua_test.lua ${URL}', '../html/results/lua_linux.json');
 });

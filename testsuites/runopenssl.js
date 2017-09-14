@@ -62,8 +62,6 @@ runner.runSystem('openssl version', function(version) {
         done([dnsResult, ipResult]);
       });
     });
-  }, function(testResults) {
-    fs.writeFileSync('../html/results/openssl_1.1.0f_linux.json', JSON.stringify(testResults));
-  });
+  }, '../html/results/openssl_1.1.0f_linux.json');
 });
 

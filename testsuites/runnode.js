@@ -50,7 +50,5 @@ runner.runTests(version, function(dnsUrl, ipUrl, done) {
       done([dnsResult, ipResult]);
     });
   });
-}, function(testResults) {
-  fs.writeFileSync('../html/results/node_6.9.4_linux.json', JSON.stringify(testResults));
-});
+}, '../html/results/node_6.9.4_linux.json');
 
