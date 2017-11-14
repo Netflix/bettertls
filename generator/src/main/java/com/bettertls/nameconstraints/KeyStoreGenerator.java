@@ -105,7 +105,7 @@ class KeyStoreGenerator {
         );
         certGen.addExtension(Extension.basicConstraints, true, new BasicConstraints(isCa));
         if (nameConstraints != null) {
-            certGen.addExtension(Extension.nameConstraints, false, nameConstraints);
+            certGen.addExtension(Extension.nameConstraints, true, nameConstraints);
         }
         if (sans != null) {
             certGen.addExtension(Extension.subjectAlternativeName, false, sans);
