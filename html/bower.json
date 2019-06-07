@@ -16,7 +16,7 @@
   "dependencies": {
     "bootstrap": "^3.3.7",
     "jquery": "^3.1.1",
-    "datatables.net": "^2.1.1",
+    "datatables.net": "^1.10.19",
     "datatables.net-dt": "^3.2.2",
     "font-awesome": "^4.7.0"
   }
