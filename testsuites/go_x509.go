@@ -141,7 +141,7 @@ func worker(failures chan<- expectation, work <-chan expectation, wg *sync.WaitG
 	const (
 		cnWithSANs                = "The DNS name for this certificate exists in the common name but not in the Subject Alternate Names extension even though the extension is specified. Most implementations will fail DNS-hostname validation on this certificate."
 		dnsInCNViolation          = "The DNS name in the common name violates a name constraint. Because there is a SAN extension, this might be ignored."
-		forbiddenIPAddressPresent = "Althought the IP address is not the subject name in question, it's name constraint violation may still cause this certificate to be rejected."
+		forbiddenIPAddressPresent = "Althought the IP address is not the subject name in question, its name constraint violation may still cause this certificate to be rejected."
 		ipInCNViolation           = "The IP in the common name violates a name constraint. Because there is a SAN extension, this might be ignored."
 		ipViolation               = "The IP in the SAN extension violates a name constraint."
 		noIPGiven                 = "There is a IP name constraint but no IP in the certificate. This isn't an explicit violation, but some implementations will fail to validate the certificate."
