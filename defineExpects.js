@@ -90,7 +90,7 @@ for (var i=0; i < manifest.certManifest.length; i++) {
       ncDnsStatus = FAIL;
     }
   }
-    
+
   var expect = {
     'ip': {
       'expect': null,
@@ -115,7 +115,7 @@ for (var i=0; i < manifest.certManifest.length; i++) {
     }
     if (ncDnsStatus != PASS) {
       expect.ip.expect = 'WEAK-OK';
-      expect.ip.descriptions.push("Although the DNS name is not the subject name in question, it's name constraint violation may still cause this certificate to be rejected.");
+      expect.ip.descriptions.push("Although the DNS name is not the subject name in question, its name constraint violation may still cause this certificate to be rejected.");
     }
 
     // Weak-pass if the IP is in the CN but not in a SAN. Most browsers support this, but strictly it's against the RFC and some TLS stacks reject it.
@@ -135,7 +135,7 @@ for (var i=0; i < manifest.certManifest.length; i++) {
       expect.ip.descriptions.push("There is a DNS name constraint but no DNS name in the certificate. This is allowed by the RFC, but some implementations will fail to validate the certificate.");
     }
   }
-    
+
   if (certDef.commonName != config.hostname && certDef.sans.indexOf(config.hostname) == -1) {
     expect.dns.descriptions.push("The DNS hostname used as an origin is not listed in the CN or SAN extension.");
     expect.dns.expect = 'ERROR';
@@ -150,7 +150,7 @@ for (var i=0; i < manifest.certManifest.length; i++) {
     }
     if (ncIpStatus != PASS) {
       expect.dns.expect = 'WEAK-OK';
-      expect.dns.descriptions.push("Althought the IP address is not the subject name in question, it's name constraint violation may still cause this certificate to be rejected.");
+      expect.dns.descriptions.push("Althought the IP address is not the subject name in question, its name constraint violation may still cause this certificate to be rejected.");
     }
 
     if (certDef.commonName == config.hostname && certDef.sans.indexOf(config.hostname) == -1) {
