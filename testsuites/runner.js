@@ -40,7 +40,7 @@ function runTestsWithCmd(userAgent, cmdTemplate, resultsPath) {
 
 function runTests(userAgent, callback, resultsPath) {
   var config = JSON.parse(fs.readFileSync('../config.json'));
-  var manifest = JSON.parse(fs.readFileSync('../html/manifest.json'));
+  var manifest = JSON.parse(fs.readFileSync('../docs/manifest.json'));
   var maxId = 1;
   for (var i=0; i < manifest.certManifest.length; i++) {
     maxId = Math.max(maxId, manifest.certManifest[i].id);

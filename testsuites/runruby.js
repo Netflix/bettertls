@@ -23,5 +23,5 @@ const runner = require('./runner.js');
 
 runner.runSystem('ruby ruby_test.rb --useragent 2>&1', function(version) {
   console.log("UserAgent: " + version);
-  runner.runTestsWithCmd(version, 'ruby ruby_test.rb ${URL}', '../html/results/ruby_linux.json');
+  runner.runTestsWithCmd(version, 'ruby ruby_test.rb ${URL}', '../docs/results/ruby_linux.json');
 });

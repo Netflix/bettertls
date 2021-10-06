@@ -1,4 +1,3 @@
 .idea/
 /certificates/
-/html/expects.json
-/html/bower_components/
+/docs/expects.json

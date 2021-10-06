@@ -23,6 +23,6 @@ const runner = require('./runner.js');
 
 runner.runSystem('python3 python_test.py --useragent 2>&1', function(version) {
   console.log("UserAgent: " + version);
-  runner.runTestsWithCmd(version, 'python3 python_test.py ${URL}', '../html/results/python_3.5.3_linux.json');
+  runner.runTestsWithCmd(version, 'python3 python_test.py ${URL}', '../docs/results/python_3.5.3_linux.json');
 });
 

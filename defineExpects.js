@@ -25,7 +25,7 @@ const PASS = 0,
   FAIL = 2;
 
 var config = JSON.parse(fs.readFileSync('config.json'));
-var manifest = JSON.parse(fs.readFileSync('html/manifest.json'));
+var manifest = JSON.parse(fs.readFileSync('docs/manifest.json'));
 var expects = [];
 for (var i=0; i < manifest.certManifest.length; i++) {
   var certDef = manifest.certManifest[i];
@@ -183,4 +183,4 @@ for (var i=0; i < manifest.certManifest.length; i++) {
   });
 }
 
-fs.writeFileSync('html/expects.json', JSON.stringify({'expects': expects}));
+fs.writeFileSync('docs/expects.json', JSON.stringify({'expects': expects}));

@@ -15,7 +15,7 @@ The [config.json](config.json) defines the hostname and IP used when generating 
 
 The certificates used for the test suite are generated using the code in the [generator](generator) subfolder. It's built with gradle and can be used with `cd generator; gradle run`. This involves generating a lot of RSA keys, so it can take about an hour to run.
 
-The `defineExpects.js` script generates the `html/expects.json` file which contains expected test results and descriptions for their expected behavior. You should run this after generating certificates. `node defineExpects.js`
+The `defineExpects.js` script generates the `docs/expects.json` file which contains expected test results and descriptions for their expected behavior. You should run this after generating certificates. `node defineExpects.js`
 
 The `generateApacheConf.js` script generates an Apache configuration using your test suite's certificates. You may need to update the paths in this script as appropriate for your system. You can then generate an apache config by running it, e.g. `node generateApacheConf.js > /etc/apache2/sites-enabled/001-bettertls.conf`.
 

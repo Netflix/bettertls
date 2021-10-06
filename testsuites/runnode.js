@@ -23,7 +23,7 @@ const https = require('https');
 const url = require('url');
 const runner = require('./runner.js');
 
-var rootCa = fs.readFileSync('../html/root.crt');
+var rootCa = fs.readFileSync('../docs/root.crt');
 
 function testUrl(targetUrl, andThen) {
   var options = url.parse(targetUrl);
@@ -50,5 +50,5 @@ runner.runTests(version, function(dnsUrl, ipUrl, done) {
       done([dnsResult, ipResult]);
     });
   });
-}, '../html/results/node_6.9.4_linux.json');
+}, '../docs/results/node_6.9.4_linux.json');
 
