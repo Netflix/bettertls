@@ -24,6 +24,6 @@ const runner = require('./runner.js');
 runner.runSystem('./go_http --version', function(goVersion) {
   var version = goVersion.replace(/\n/g, " ");
   console.log("UserAgent: " + version);
-  runner.runTestsWithCmd(version, './go_http --cacert ../certificates/root.crt ${URL}', '../docs/results/go_1.10.3_linux.json');
+  runner.runTestsWithCmd(version, './go_http --cacert ../docs/root.crt ${URL}', '../docs/results/go_1.10.3_linux.json');
 });
 

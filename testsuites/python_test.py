@@ -35,7 +35,7 @@ if sys.argv[1] == '--useragent':
     sys.exit(0)
 
 try:
-    r = requests.get(sys.argv[1], verify='../certificates/root.crt')
+    r = requests.get(sys.argv[1], verify='../docs/root.crt')
     exit_code = 0 if r.status_code == 200 else 1
     sys.exit(exit_code)
 except Exception:

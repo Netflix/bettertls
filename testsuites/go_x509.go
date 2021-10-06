@@ -270,7 +270,7 @@ func main() {
 }
 
 func loadRoot() (*x509.Certificate, error) {
-	rootChain, err := readPEMChain(filepath.Join(baseDir, "certificates", "root.crt"))
+	rootChain, err := readPEMChain(filepath.Join(baseDir, "docs", "root.crt"))
 	if err != nil {
 		return nil, err
 	}

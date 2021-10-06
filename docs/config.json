@@ -1,1 +1,14 @@
-../config.json
+{
+  "basePort": 8000,
+  "testVersion": 1,
+
+  "ip": "52.20.118.238",
+  "ipSubtree": "52.0.0.0/11",
+  "hostname": "test.nameconstraints.bettertls.com",
+  "hostSubtree": "nameconstraints.bettertls.com",
+
+  "invalidIp": "172.16.0.1",
+  "invalidHostname": "bad.example.com",
+  "invalidIpSubtree": "192.168.0.0/16",
+  "invalidHostSubtree": "example.net"
+}

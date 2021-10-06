@@ -37,7 +37,7 @@ runner.runSystem('openssl version', function(version) {
       return;
     }
 
-    runner.runSystem('openssl s_client -CAfile ../certificates/root.crt -verify_hostname ' + matches[1] + ' -connect ' + matches[1] + ':' + matches[2] + ' </dev/null', function(dnsOutput) {
+    runner.runSystem('openssl s_client -CAfile ../docs/root.crt -verify_hostname ' + matches[1] + ' -connect ' + matches[1] + ':' + matches[2] + ' </dev/null', function(dnsOutput) {
       var dnsVerifyMatch = dnsOutput.match(verifyPattern);
       if (!dnsVerifyMatch) {
         console.error("Failed to get verify result: " + dnsOutput);
@@ -51,7 +51,7 @@ runner.runSystem('openssl version', function(version) {
         return;
       }
 
-      runner.runSystem('openssl s_client -CAfile ../certificates/root.crt -verify_ip ' + matches[1] + ' -connect ' + matches[1] + ':' + matches[2] + ' </dev/null', function(ipOutput) {
+      runner.runSystem('openssl s_client -CAfile ../docs/root.crt -verify_ip ' + matches[1] + ' -connect ' + matches[1] + ':' + matches[2] + ' </dev/null', function(ipOutput) {
         var ipVerifyMatch = ipOutput.match(verifyPattern);
         if (!ipVerifyMatch) {
           console.error("Failed to get verify result: " + ipOutput);

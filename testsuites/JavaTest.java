@@ -39,7 +39,7 @@ public class JavaTest {
 
         CertificateFactory certificateFactory = CertificateFactory.getInstance("X509");
         Certificate rootCrt;
-        try (InputStream inputStream = Files.newInputStream(Paths.get("../certificates/root.crt"))) {
+        try (InputStream inputStream = Files.newInputStream(Paths.get("../docs/root.crt"))) {
             rootCrt = certificateFactory.generateCertificate(inputStream);
         }
         KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());

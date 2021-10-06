@@ -93,7 +93,8 @@ public class CertificateGenerator {
                 .setSubjectAlternateNames(null)
                 .build();
 
-        writeCertificate(rootCa.getCertificate(KeyStoreGenerator.DEFAULT_ALIAS), outputDir.resolve("root.crt"));
+        writeCertificate(rootCa.getCertificate(KeyStoreGenerator.DEFAULT_ALIAS),
+                Paths.get("../docs/root.crt"));
 
         for (String commonName : new String[]{null, hostname, ip, invalidHostname, invalidIp }) {
             for (String dnsSan : new String[]{null, hostname, invalidHostname}) {
