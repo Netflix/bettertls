@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!--
+    Copyright 2021 Netflix, Inc.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+-->
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha384-JKIDqM48bt14NZpzl9v0AP36VK2C/X6RuSPfimxpoWdSANUXblZUX1cgdQw8cZUK" crossorigin="anonymous">
+    <title>BetterTLS: Path Building</title>
+
+    <style type="text/css">
+        body {
+            background-color: #DADADA;
+            margin-top: 1em;
+        }
+    </style>
+</head>
+<body>
+<a href="https://github.com/Netflix/bettertls"><img class="hidden-xs" style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+<div class="ui container">
+    <h1 class="ui header" style="font-size: 3em">
+        <a href="/">BetterTLS</a>: Path Building
+    </h1>
+    <div class="ui segment">
+        <div class="ui top attached tabular menu">
+            <a class="active item" data-tab="about">About</a>
+            <a class="item" data-tab="results">Archived Results</a>
+        </div>
+        <div class="ui bottom attached active tab segment" data-tab="about">
+            <h1>What is BetterTLS: Path Building?</h1>
+            <p>This test suite exercises the certificate path building capabilities of TLS implementations. Path building refers to the problem of building a valid, trusted chain from an end-entity's leaf certificate to a trust anchor. For background and motivation, we highly recommend you read <a href="https://medium.com/@sleevi_/path-building-vs-path-verifying-the-chain-of-pain-9fbab861d7d6">Ryan Sleevi's blog post</a> on this topic. The problem stated can be succinctly summarized with this excerpt:</p>
+
+            <div class="ui segment raised">
+                Often, when I talk to people who are responsible for configuring certificates on their servers, they often talk about _the_ certificate chain. ... [But] there are many chains, with <a href="https://blog.cloudflare.com/introducing-cfssl/">different chains are needed by different clients</a>, who have different root stores and different behaviors.
+            </div>
+
+            <p>Historically the TLS specifications have not required that TLS implementations support particularly robust certificate path building. In practice many of them (such as OpenSSL) don't support verifying anything other than a simple, non-branching sequence of certificates. This has changed in the <a href="https://datatracker.ietf.org/doc/html/rfc8446#section-4.4.2">specification for TLS 1.3</a> which advises that implementations SHOULD support more robust certificate path building:</p>
+
+            <div class="ui segment raised">
+                Note: Prior to TLS 1.3, "certificate_list" ordering required each certificate to certify the one immediately preceding it; however, some implementations allowed some flexibility. Servers sometimes send both a current and deprecated intermediate for transitional purposes, and others are simply configured incorrectly, but these cases can nonetheless be validated properly. For maximum compatibility, all implementations SHOULD be prepared to handle potentially extraneous certificates and arbitrary orderings from any TLS version, with the exception of the end-entity certificate which MUST be first.
+            </div>
+
+            <p>This test suite can be applied to TLS implementations to not only verify whether they satisfy the above provision, but whether they are doing so correctly.</p>
+
+            <p>Check out our <a href="https://netflixtechblog.com/revisiting-bettertls-certificate-path-building-4c978b79843f">blog post</a> for a summary of results from common TLS implementations at the time this suite was created.</p>
+
+            <h1>Why does this matter?</h1>
+            <p>The web PKI ecosystem is a shifting landscape. Features like what certificate authorities are trusted, what algorithms should be used, and what X.509 certificate extensions can (and should) be enforced have been changing every year. Service owners need to keep up with these changes while also ensuring that existing clients are able to reach their service.</p>
+            <p>For example, the <a href="https://letsencrypt.org/certificates/">Let's Encrypt R3 CA</a> has two certificates; one signed by `DST Root CA X3` and one signed by `ISRG Root X1`. Older clients only trusted the <a href="https://crt.sh/?id=8395">self-signed DST Root CA X3 certificate</a>, usually since they were built before the ISRG Root X1 CA had made its way into broadly distributed truststores. However, newer clients only trust the ISRG Root X1 CA since the DST Root CA X3 self-signed certificate expired on September 30, 2021. Ideally, service owners would be able to send _both_ the <a href="https://crt.sh/?id=3479778542">DST Root CA X3 => R3</a> and <a href="https://crt.sh/?id=3334561879">ISRG Root X1 => R3</a> certificate so that any client can verify their trust of the Let's Encrypt R3 CA and ultimately verify their trust in the end entity certificate. In practice, many clients are not able to handle getting muiltple potential paths in a TLS response and this leaves both clients and service operators <a href="https://status.catchpoint.com/incidents/f5yl89kygf12">subject to outages</a>.</p>
+            <p>In general, having clients with a robust certificate path building allows the community to be more agile and make changes to the web PKI ecosystem over time while reducing risk of breaking older clients. Here are just a few examples of these sorts of changes in the past:</p>
+
+            <ul class="ui list">
+                <li><a href="https://scotthelme.co.uk/are-you-ready-for-the-symantec-distrust/">Distrust of the Symantec CA</a></li>
+                <li><a href="https://www.venafi.com/education-center/ssl/sha-1-deprecation">Deprecation of signing algorithms using SHA-1</a></li>
+                <li><a href="https://www.agwa.name/blog/post/fixing_the_addtrust_root_expiration">Expiration of the AddTrust CA</a></li>
+                <li><a href="https://support.apple.com/en-us/HT211025">Apple's restriction of certificate validity to 398 days</a></li>
+            </ul>
+
+            <p>At a minimum, this test suite can help inform service owners about how much path building different TLS client implementations support so that they can determine how clients will be impacted by changes to their service's TLS configuration and certificates.</p>
+
+            <h1>What's on this website?</h1>
+            <p>The site contains archived test results from the time the test suite was originally created. Check out the project's <a href="https://github.com/Netflix/bettertls">GitHub page</a> for information on how you can apply the test suite to additional TLS implementations.</p>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="results">
+            <p>This is a collection of save test results. This test suite detects supported features (such as distrusting certificates with a deprecated signature algorithm and whether path building is supported at all) and skips tests that rely on unsupported features. To make sense of results, you should not only consider failed tests but see which were not even run.</p>
+            <p>Check out our <a href="https://netflixtechblog.com/revisiting-bettertls-certificate-path-building-4c978b79843f">blog post</a> for some discussion of these results.</p>
+
+            <ul class="ui list">
+                <li><a href="reports/boringssl_20211005.html">BoringSSL (a406ad76)</a></li>
+                <li><a href="reports/chrome_macos10.15.7_95.0.4638.32.txt">Chrome (95.0.4638.32), MacOS 10.15.7</a></li>
+                <li><a href="reports/chrome_win64_94.0.4606.71.txt">Chrome (94.0.4606.71), Windows</a></li>
+                <li><a href="reports/chromium_linux64_94.0.4606.71.txt">Chromium (94.0.4606.71), Linux</a></li>
+                <li><a href="reports/curl_7.68.0.html">curl (7.68.0), OpenSSL/1.1.1f</a></li>
+                <li><a href="reports/edge_win64_91.0.864.59.txt">Edge (91.0.864.59), Windows</a></li>
+                <li><a href="reports/firefox_linux64_92.0.txt">Firefox (92.0), Linux</a></li>
+                <li><a href="reports/gnutls_3.6.13.html">GnuTLS (3.6.13)</a></li>
+                <li><a href="reports/gnutls_3.7.2.html">GnuTLS (3.7.2)</a></li>
+                <li><a href="reports/golang_1.17.1.html">Go (1.17.1)</a></li>
+                <li><a href="reports/java_11.0.11.html">Java (11.0.11)</a></li>
+                <li><a href="reports/libressl_3.4.0.html">LibreSSL (3.4.0)</a></li>
+                <li><a href="reports/openssl_1.1.1f.html">OpenSSL (1.1.1f)</a></li>
+                <li><a href="reports/openssl_1.1.1l.html">OpenSSL (1.1.1l)</a></li>
+                <li><a href="reports/openssl_3.0.0.html">OpenSSL (3.0.0)</a></li>
+                <li><a href="reports/pkijs_2.1.97.html">PKI.js (2.1.97)</a></li>
+                <li><a href="reports/rustls_0.20.0.html">Rustls (0.20.0)</a></li>
+                <li><a href="reports/safari_macos10.15.7_605.1.15.txt">Safari (605.1.25), MacOS 10.15.7</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script src="//code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+<script src="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js" integrity="sha384-HtPdw6a7QeUoz9fgdEIk3iL4WifPUg7BuiWndgaxmBDiCHMYfOO2nEJ9J3YPg6+S" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    $('.menu .item').tab();
+</script>
+</body>
+</html>

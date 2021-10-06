@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-    Copyright 2017 Netflix, Inc.
+    Copyright 2021 Netflix, Inc.
 
        Licensed under the Apache License, Version 2.0 (the "License");
        you may not use this file except in compliance with the License.
@@ -15,140 +15,72 @@
        limitations under the License.
 -->
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-    <link rel="stylesheet" href="//cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css" integrity="sha384-DN+p0TZbymSf3/9eO1hUms7UTLKleVVdZM3++HP8/0hHYdgjUW7/dei+Jd0U45oF" crossorigin="anonymous">
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="main.css">
     <link rel="shortcut icon" href="favicon.ico">
-    <title>BetterTLS: Name Constraints</title>
-  </head>
-  <body>
-    <a href="https://github.com/Netflix/bettertls"><img class="hidden-xs" style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
-    <div id="header">
-      <h1>BetterTLS: Name Constraints</h1>
-      <span class="subtitle">A Name Constraints test suite for HTTPS clients.</span>
-    </div>
-    <noscript>
-      <div class="noscript-notice">This site uses JavaScript for client-side rendering! Please enable JavaScript to view this page. This website is <a href="https://github.com/Netflix/bettertls">open source</a> and we encourage you to review it!</div>
-    </noscript>
-    <div id="mainLoader" style="display:none">
-      <img src="ajax-loader.gif">
-    </div>
-    <div id="mainTabs" style="display:none">
-      <ul class="nav nav-pills">
-        <li class="active" data-target="aboutTab"><a href="#!about">About</a></li>
-        <li data-target="testBrowserTab"><a href="#!test">Test Browser</a></li>
-        <li data-target="viewResultsTab"><a href="#!view">View Archived Results</a></li>
-      </ul>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha384-JKIDqM48bt14NZpzl9v0AP36VK2C/X6RuSPfimxpoWdSANUXblZUX1cgdQw8cZUK" crossorigin="anonymous">
+    <title>BetterTLS</title>
 
-      <div class="tab" id="aboutTab">
+    <style type="text/css">
+        body {
+            background-color: #DADADA;
+            margin-top: 1em;
+        }
+        .ui.button.main {
+            width: 100%;
+            text-align: center;
+            height: 150px;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+<a href="https://github.com/Netflix/bettertls"><img class="hidden-xs" style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+<div class="ui container">
+    <h1 class="ui header" style="font-size: 3em">
+        BetterTLS
+    </h1>
+    <div class="ui segment">
         <h1>What is BetterTLS?</h1>
-        <p>BetterTLS is a test suite for HTTPS clients implementing verification of the Name Constraints certificate extension. This extension is placed on CA certificates which restrict the DNS/IP space for which the CA (or sub-CAs) can issue certificates. One of the most common use-cases is for CAs to cross-certify another CA, but for a limited namespace. For example, Acme Corp. could sign a certificate for an intermediary CA but include a Name Constraints extension which blacklists the intermediate CA from signing certificates for acme.com.</p>
-        <p>Another use-case for the Name Constraints extension (which motivated this project) is as a way to reduce the risk exposure of trusting an internal CA. For example, we could create an internal CA which includes a Name Constraints extension with a whitelist of <span class="tt">internal.example.com</span> and <span class="tt">192.168.0.0/16</span>. A user who imports this CA into her browser's truststore can then be confident that this certificate will only be used for internal company pages and IPs and cannot be used to intercept secure communications with external websites.</p>
-        <p>However, the Name Constraints extension only provides these assurances if we can be confident that HTTPS clients properly enforce them...</p>
+        <p>BetterTLS is a collection of test suites for TLS clients. At the moment, two test suites have been implemented. One tests a client's validation of the Name Constraints certificate extension. This extension is placed on CA certificates which restrict the DNS/IP space for which the CA (or sub-CAs) can issue certificates. The other test suite evaluates a TLS client's ability to discover a valid certificate path (a certificate "chain") from an unordered collection of certificates.<p>
 
         <h1>Why BetterTLS?</h1>
-        <p>In order to verify that the Name Constraints extension protects users from mis-issued certificates, we developed this test suite. As we did so, it became apparent that there are many different implementations of the certificate verification algorithm, each of which has corner cases that are not properly handled. Check out the <a href="#!view?results=chrome_55_osx10">archived results</a> tab for examples of HTTPS clients with failing tests.</p>
-        <p>These are some examples of incorrect behavior we have observed:</p>
-        <ul>
-          <li>If a hostname is in the common name (CN) of the subject instead of the subject alternate name (SAN) extension, it may not be checked against the Name Constraints extension at all even when it is used as the hostname for verification.</li>
-          <li>Although RFCs suggest that only hostnames should appear in the common name (CN) of a certificate, many clients will still accept an IP address in the CN. However, these implementations do not always apply IP Name Constraints against the CN.</li>
-          <li>Some implementations show a certificate as valid when one subject name matches a Name Constraint blacklist but a second subject name does not. (The RFC specification makes it clear that validation should fail if <i>any</i> subject name is blacklisted.)</li>
-        </ul>
-        <p>Although this test suite certainly isn't exhaustive, the hope is that it provides a reference for developers to use in order to help verify that Name Constraints extensions are properly enforced in their TLS implementation.</p>
+        <p>The BetterTLS project was originally created to ensure that we could create a name-constrained CA that could not be abused. We were only able to gain this confidence by evaluating whether clients (such as popular web browsers) were correctly handling the name constraints extension.</p>
+        <p>We later added an additional test suite for certificate path building because of the recurring pains we experienced during transitions in the web PKI ecosystem, such as intermediate CA expiry and signature algorithm deprecation. The goal is to help TLS implementations identify and verify changes that could alleviate these pain points and to help application developers pick TLS implementations that won't break during these transitions.</p>
 
         <h1>Why "BetterTLS"?</h1>
-        <p>This project is inspired in part by <a href="https://badssl.com/">badssl.com</a>. In a similar vein, we want to highlight some of the issues we've found with HTTPS/TLS implementations so that they can be corrected. By doing so, we hope to make TLS better for everyone.</p>
-
-        <h1>Name Constraints Documentation</h1>
-        <p>The Name Constraints extension along with its verification is defined in <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.10">RFC 5280</a>. Further useful information can be found in <a href="https://tools.ietf.org/html/rfc6125">RFC 6125</a> which defines how to identify a server's hostname from certificate extensions.</p>
-
-        <h1>Testing Clients</h1>
-        <p>Browsers can be tested by visiting the <a href="#!test">test browser</a> tab on this website. Non-browser clients (such as Java and Python) can also be easily tested against the BetterTLS test suite. Check out the <a href="https://github.com/Netflix/bettertls/tree/master/testsuites">testsuites</a> folder of the BetterTLS source repository for examples on how to do so.</p>
+        <p>This project is inspired in part by <a href="https://badssl.com/">badssl.com</a>. In a similar vein, we want to highlight some of the issues and difficulties we've found with HTTPS/TLS implementations so that they can be corrected. By doing so, we hope to make TLS better for everyone.</p>
 
         <h1>Contribute</h1>
-        <p>BetterTLS is <a href="https://github.com/Netflix/bettertls">open source software</a>. We encourage you to help add more tests, fix any issues you find in the existing test suite, or even fork it for use in your own software project. Pull requests are welcome!</p>
-      </div> <!-- aboutTab -->
-
-      <div class="tab" style="display:none" id="testBrowserTab">
-        <button id="initTestButton">Run Browser Test</button>
-        <div id="installRoot" style="display:none">
-          <p>To run this test you need to install the <a href="root.crt">root CA</a> for this suite. Make sure you remove it from your trust store afterward. Refresh this page once it is installed.</p>
-          <p>Windows: If your browser uses Windows&#39; certificate stores then install the certificate in the trusted root store, do not use automatic selection. You may need to restart your browser for the certificate to be immediately recognized.</p>
-        </div>
-        <div id="browserTestsDisabled" style="display:none">
-          <p>Sorry, this part of the bettertls.com has been replaced with a static version of the original site; online browser testing is no longer supported.</p>
-          <p>Please check out the source repository and follow instructions for setting up a local server against which you can run tests.</p>
-        </div>
-        <div class="testResults"></div>
-      </div> <!-- testBrowserTab -->
-
-      <div class="tab" style="display:none" id="viewResultsTab">
-        <div class="divTable">
-          <div>
-            <div>View Results:</div>
-            <div>
-              <select id="resultsSelect">
-                <option value=""></option>
-                <option value="chrome_55_osx10">Chrome 55.0.2883.95 (OSX)</option>
-                <option value="chrome_61_osx10">Chrome 61.0.3163.79 (OSX)</option>
-                <option value="chrome_63_osx10.13.3">Chrome 63.0.3239.132 (OSX 10.13.3)</option>
-                <option value="chrome_55_windows">Chrome 55.0.2883.87 (Windows)</option>
-                <option value="chrome_61_windows">Chrome 61.0.3163.79 (Windows)</option>
-                <option value="chromium_55_linux">Chromium 55.0.2883.75 (Linux)</option>
-                <option value="chromium_60_linux">Chromium 60.0.3112.78 (Linux)</option>
-                <option value="edge_14_windows">Edge 14.14393 (Windows)</option>
-                <option value="firefox_50_linux">Firefox 50.0 (Linux)</option>
-                <option value="firefox_50_osx10">Firefox 50.0 (OSX)</option>
-                <option value="firefox_50_windows">Firefox 50.0 (Windows)</option>
-                <option value="safari_602_osx10">Safari 602.3.12 (OSX)</option>
-                <option value="safari_604_osx10">Safari 604.1.38 (OSX)</option>
-                <option value="safari_604_osx10.13.3">Safari 604.5.6 (OSX 10.13.3)</option>
-                <option value="go_1.10.3_linux">Go 1.10.3 (Linux)</option>
-                <option value="java_1.8.0_111_linux">OpenJDK 1.8.0_111 (Linux)</option>
-                <option value="java_1.9.0_149_linux">Oracle Java 9-ea+149 (Linux)</option>
-                <option value="node_4.4.4_linux">Node.js v4.4.4 (Linux)</option>
-                <option value="node_6.9.4_linux">Node.js v6.9.4 (Linux)</option>
-                <option value="curl_7.50.1_linux">curl 7.50.1 with GnuTLS/3.5.7 (Linux)</option>
-                <option value="python_2.7.13_linux">Python 2.7.13 with requests 2.18.1, OpenSSL 1.1.0f</option>
-                <option value="python_3.5.3_linux">Python 3.5.3 with requests 2.18.1, OpenSSL 1.1.0f</option>
-                <option value="lua_5.2_linux">Lua 5.2 with lua-http 0.1, OpenSSL 1.1.0f</option>
-                <option value="openssl_1.1.0f_linux">OpenSSL 1.1.0f s_client CLI</option>
-                <option value="ruby_2.4.1_linux">Ruby: 2.4.1-p111, OpenSSL 1.1.0f</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <div>View Saved Results:</div>
-            <div><input id="resultsUpload" type="file" style="display:inline-block"></div>
-          </div>
-        </div>
-        <br>
-        <div class="testResults" style="margin-top:1em">
-          <div class="testResultsLoading" style="display:none">
-            <img src="ajax-loader.gif">
-          </div>
-          <div class="testResultsOutput" style="display:none">
-          </div>
-        </div>
-      </div> <!-- viewResultsTab -->
-
-    </div> <!-- mainTabs -->
-    <div id="footer">
-      <div class="left">
-        <div class="ftitle hidden-xs">"Tis but thy name that is my enemy." -Juliet Capulet</div>
-      </div>
-      <div class="right">
-        <div class="powered-by"></div>
-      </div>
+        <p>BetterTLS is <a href="https://github.com/Netflix/bettertls">open source software</a>. We encourage you to help add more tests, fix any issues you find in the existing test suites, or even fork it for use in your own software project. Pull requests are welcome!</p>
     </div>
-    <script src="//code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
-    <script src="//cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js" integrity="sha384-rfvKADMCRZpVdF4/h4VOowFi3EyKPCoFj7EisSOtOTwJzIA44wSTfQzSLbNPKW6F" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="runtest.js"></script>
-    <script type="text/javascript" src="main.js"></script>
-  </body>
+    <div style="height: 1em"></div>
+    <div class="ui grid">
+        <div class="sixteen wide column center aligned">
+            <h2>Pick a Test Suite</h2>
+        </div>
+        <div class="eight wide column">
+            <a href="/nameconstraints">
+                <button class="ui button main huge">
+                    <i class="icon unlock alternate"></i>
+                    Name Constraints
+                </button>
+            </a>
+        </div>
+        <div class="eight wide column">
+            <a href="/pathbuilding">
+                <button class="ui button main huge">
+                    <i class="icon sitemap"></i>
+                    Path Building
+                </button>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="//code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+<script src="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js" integrity="sha384-HtPdw6a7QeUoz9fgdEIk3iL4WifPUg7BuiWndgaxmBDiCHMYfOO2nEJ9J3YPg6+S" crossorigin="anonymous"></script>
+</body>
 </html>

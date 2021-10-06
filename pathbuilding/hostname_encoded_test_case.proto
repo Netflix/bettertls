@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option go_package = "/main";
+
+message HostnameEncodedTestCase {
+  uint32 trust_graph = 1;
+  uint32 src_node = 2;
+  uint32 dst_node = 3;
+  repeated uint32 invalid_edges = 4;
+  uint32 invalid_reason = 5;
+}
