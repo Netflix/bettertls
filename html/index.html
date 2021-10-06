@@ -19,9 +19,9 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="bower_components/datatables.net-dt/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css" integrity="sha384-DN+p0TZbymSf3/9eO1hUms7UTLKleVVdZM3++HP8/0hHYdgjUW7/dei+Jd0U45oF" crossorigin="anonymous">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="main.css">
     <link rel="shortcut icon" href="favicon.ico">
     <title>BetterTLS: Name Constraints</title>
@@ -79,6 +79,10 @@
         <div id="installRoot" style="display:none">
           <p>To run this test you need to install the <a href="root.crt">root CA</a> for this suite. Make sure you remove it from your trust store afterward. Refresh this page once it is installed.</p>
           <p>Windows: If your browser uses Windows&#39; certificate stores then install the certificate in the trusted root store, do not use automatic selection. You may need to restart your browser for the certificate to be immediately recognized.</p>
+        </div>
+        <div id="browserTestsDisabled" style="display:none">
+          <p>Sorry, this part of the bettertls.com has been replaced with a static version of the original site; online browser testing is no longer supported.</p>
+          <p>Please check out the source repository and follow instructions for setting up a local server against which you can run tests.</p>
         </div>
         <div class="testResults"></div>
       </div> <!-- testBrowserTab -->
@@ -142,8 +146,8 @@
         <div class="powered-by"></div>
       </div>
     </div>
-    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="//code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+    <script src="//cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js" integrity="sha384-rfvKADMCRZpVdF4/h4VOowFi3EyKPCoFj7EisSOtOTwJzIA44wSTfQzSLbNPKW6F" crossorigin="anonymous"></script>
     <script type="text/javascript" src="runtest.js"></script>
     <script type="text/javascript" src="main.js"></script>
   </body>

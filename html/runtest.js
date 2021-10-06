@@ -33,6 +33,10 @@ function linkRenderer(data, type, row, meta) {
 }
 
 function browserTest() {
+  if (window.location.hostname.endsWith("bettertls.com")) {
+    $('#browserTestsDisabled').show();
+    return;
+  }
 
   var config = sessionData.config;
   var testId = 0;

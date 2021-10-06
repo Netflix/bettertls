@@ -25,7 +25,7 @@ const PASS = 0,
   FAIL = 2;
 
 var config = JSON.parse(fs.readFileSync('config.json'));
-var manifest = JSON.parse(fs.readFileSync('certificates/manifest.json'));
+var manifest = JSON.parse(fs.readFileSync('html/manifest.json'));
 var expects = [];
 for (var i=0; i < manifest.certManifest.length; i++) {
   var certDef = manifest.certManifest[i];

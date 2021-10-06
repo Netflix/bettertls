@@ -105,7 +105,7 @@ public class CertificateGenerator {
 
         final JSONObject manifest = new JSONObject();
         manifest.put("certManifest", certManifest);
-        Files.write(outputDir.resolve("manifest.json"), manifest.toString().getBytes(StandardCharsets.UTF_8));
+        Files.write(Paths.get("../html/manifest.json"), manifest.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     private void generateCertificatesWithNames(KeyStore rootCa, String commonName, String dnsSan, String ipSan) throws Exception {
