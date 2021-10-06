@@ -297,7 +297,7 @@ func loadConfig() (*configFile, error) {
 }
 
 func loadExpectations() (*expectations, error) {
-	expectsBytes, err := ioutil.ReadFile(filepath.Join(baseDir, "html", "expects.json"))
+	expectsBytes, err := ioutil.ReadFile(filepath.Join(baseDir, "docs", "expects.json"))
 	if err != nil {
 		return nil, err
 	}
