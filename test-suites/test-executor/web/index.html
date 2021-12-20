@@ -1,0 +1,210 @@
+<html>
+  <body>
+    <p>Hello, World!</p>
+    <textarea id="output" readonly disabled style="width: 100%; height:80vh"></textarea>
+
+    <script src="https://cdn.rawgit.com/dcodeIO/protobuf.js/6.11.2/dist/protobuf.min.js" integrity="sha384-MBDRVA4avkir016YP92Fh9y9Weh5rX74xOE7GTRVZA8KBsr771Dl8ZOb52NQhHDV" crossorigin="anonymous"></script>
+    <script src="test_results.js"></script>
+    <script src="https://unpkg.com/pako@2.0.4/dist/pako.es5.min.js" integrity="sha384-H2SssWB3Hv1GhnoquFfkLlQ2//eDQQ42SH5vNOzDe1s0zR5NnVrs3KbxQvSiU4+1" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var SuiteTestResults = protobuf.roots.default.test_executor.SuiteTestResults;
+      var TestCaseResult = protobuf.roots.default.test_executor.TestCaseResult;
+
+      function base64encode(a, urlEncode, stripPadding) {
+        var b64 = btoa(String.fromCharCode.apply(null, a));
+        if (urlEncode) {
+          b64 = b64.replaceAll('+', '-');
+          b64 = b64.replaceAll('/', '_');
+        }
+        if (stripPadding) {
+          b64 = b64.replaceAll('=', '');
+        }
+
+        return b64;
+      }
+
+      function doLog(txt) {
+        document.getElementById('output').textContent += txt + "\n";
+      }
+
+      function executeTest(unsupportedFeatures, suiteName, testCase) {
+        return getTestCase(suiteName, testCase)
+          .then(function(testInfo) {
+            var allFeaturesSupported = true;
+            if (testInfo.requiredFeatures) {
+              for (var feature of testInfo.requiredFeatures) {
+                if (unsupportedFeatures.indexOf(feature) !== -1) {
+                  allFeaturesSupported = false;
+                  break;
+                }
+              }
+            }
+            if (!allFeaturesSupported) {
+              return Promise.resolve(TestCaseResult.SKIPPED);
+            }
+            return setAndRunTestCase(testInfo, suiteName, testCase);
+          });
+      }
+
+      function setAndRunTestCase(testInfo, suiteName, testCase) {
+        return setTestCase(suiteName, testCase)
+                .then(function () {
+                  return fetch('https://' + testInfo.hostname + ':8443/ok')
+                          .then(function (result) {
+                            if (result.ok) {
+                              return TestCaseResult.ACCEPTED;
+                            }
+                            return TestCaseResult.REJECTED;
+                          }).catch(function () {
+                            return TestCaseResult.REJECTED;
+                          });
+                });
+      }
+
+      function doesTestCasePass(suiteName, testCase) {
+        return getTestCase(suiteName, testCase).then(function (testInfo) {
+          return setAndRunTestCase(testInfo, suiteName, testCase).then(function(result) {
+            if (testInfo.expectedResult === 'PASS' || testInfo.expectedResult === 'SOFT_PASS') {
+              return result === TestCaseResult.ACCEPTED;
+            } else {
+              return result === TestCaseResult.REJECTED;
+            }
+          });
+        });
+      }
+
+      function setTestCase(suiteName, testCase) {
+        return fetch('/setTest', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            suite: suiteName,
+            testCase: testCase
+          })
+        }).then(function (response) {
+          if (!response.ok) {
+            throw new Error("Unable to set test case: " + response.statusText);
+          }
+        });
+      }
+
+      function getTestCase(suiteName, testCase) {
+        return fetch('/getTest?suite=' + suiteName + '&testCase=' + testCase)
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error("Unable to lookup test case: " + response.statusText);
+            }
+            return response.json();
+          });
+      }
+
+      function runAllTests() {
+        let betterTlsRevision;
+        let suiteResults = {};
+        fetch('/suites').then(function (result) {
+          return result.json();
+        }).then(function (suitesResp) {
+          betterTlsRevision = suitesResp.betterTlsRevision;
+          let suites = suitesResp.suites;
+          let promise = Promise.resolve();
+          for (let suiteName in suites) {
+            (function(suiteName, suite) {
+              promise = promise.then(function() {
+                return testSuite(suiteName, suite)
+                        .then(function (res) {
+                          var protoRes = SuiteTestResults.encode(res).finish();
+                          var encoded = pako.gzip(protoRes);
+                          suiteResults[suiteName] = base64encode(encoded);
+                        });
+              });
+            })(suiteName, suites[suiteName]);
+          }
+          return promise;
+        }).then(function() {
+          doLog("All done!");
+          document.getElementById('output').textContent = JSON.stringify({
+            implementation: "browser",
+            version: navigator.userAgent,
+            date: new Date(),
+            betterTlsRevision: betterTlsRevision,
+            suites: suiteResults
+          });
+          console.log(JSON.stringify(suiteResults));
+        }).catch(function(err) {
+          doLog("Error: " + err);
+        })
+      }
+
+      function isFeatureSupported(suiteName, testCases) {
+        function runTest(idx) {
+          if (idx >= testCases.length) {
+            return true;
+          }
+          return doesTestCasePass(suiteName, testCases[idx])
+            .then(function(passed) {
+              if (!passed) {
+                return false;
+              }
+              return runTest(idx+1);
+            });
+        }
+        return runTest(0);
+      }
+
+      function testSuite(suiteName, suite) {
+        doLog("Starting test suite: " + suiteName);
+
+        var supportedFeatures = [];
+        var unsupportedFeatures = [];
+        var results = [];
+        function runTest(idx) {
+          if (idx >= suite.testCount) {
+            return SuiteTestResults.create({
+              supportedFeatures: supportedFeatures,
+              unsupportedFeatures: unsupportedFeatures,
+              testCaseResults: results
+            });
+          }
+          doLog("Running test " + suiteName + " " + idx + "/" + suite.testCount);
+
+          return executeTest(unsupportedFeatures, suiteName, idx)
+                  .then(function (r) {
+                    results.push(r);
+                    return runTest(idx + 1);
+                  });
+        }
+
+        return doesTestCasePass(suiteName, suite.sanityCheckTestCase).then(function(passes) {
+          if (!passes) {
+            throw new Error("Failed to verify root cert is trusted! Download and trust the certificate at "
+                    + window.location.origin + "/root.pem");
+          }
+        }).then(function() {
+          var feature;
+          var promise = Promise.resolve();
+          for (feature in suite.featureTestCases) {
+            (function (feature, testCases) {
+              promise = promise.then(function() {
+                return isFeatureSupported(suiteName, testCases)
+                        .then(function (supported) {
+                          if (supported) {
+                            supportedFeatures.push(feature);
+                          } else {
+                            unsupportedFeatures.push(feature);
+                          }
+                        });
+              });
+            })(parseInt(feature), suite.featureTestCases[feature]);
+          }
+          return promise;
+        }).then(function() {
+          return runTest(0);
+        });
+      }
+
+      runAllTests();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+syntax="proto3";
+
+package test_executor;
+option go_package="/test_executor";
+
+enum TestCaseResult {
+  ACCEPTED = 0;
+  REJECTED = 1;
+  SKIPPED = 2;
+}
+
+message SuiteTestResults {
+  repeated int32 supported_features = 1;
+  repeated int32 unsupported_features = 2;
+  repeated TestCaseResult test_case_results = 3;
+}

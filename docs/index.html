@@ -14,73 +14,320 @@
        See the License for the specific language governing permissions and
        limitations under the License.
 -->
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" integrity="sha384-kKpyGTkmY+nYEkRda6qauvrYqFNO4csWTLspXM3FCJ89NsU9FhPY5kebmiPqu8B6" crossorigin="anonymous">
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha384-JKIDqM48bt14NZpzl9v0AP36VK2C/X6RuSPfimxpoWdSANUXblZUX1cgdQw8cZUK" crossorigin="anonymous">
     <title>BetterTLS</title>
 
-    <style type="text/css">
+    <style>
         body {
             background-color: #DADADA;
             margin-top: 1em;
-        }
-        .ui.button.main {
-            width: 100%;
-            text-align: center;
-            height: 150px;
-            background: white;
         }
     </style>
 </head>
 <body>
 <a href="https://github.com/Netflix/bettertls"><img class="hidden-xs" style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
 <div class="ui container">
-    <h1 class="ui header" style="font-size: 3em">
-        BetterTLS
-    </h1>
+    <h1 class="ui header" style="font-size: 3em">BetterTLS</h1>
     <div class="ui segment">
-        <h1>What is BetterTLS?</h1>
-        <p>BetterTLS is a collection of test suites for TLS clients. At the moment, two test suites have been implemented. One tests a client's validation of the Name Constraints certificate extension. This extension is placed on CA certificates which restrict the DNS/IP space for which the CA (or sub-CAs) can issue certificates. The other test suite evaluates a TLS client's ability to discover a valid certificate path (a certificate "chain") from an unordered collection of certificates.<p>
-
-        <h1>Why BetterTLS?</h1>
-        <p>The BetterTLS project was originally created to ensure that we could create a name-constrained CA that could not be abused. We were only able to gain this confidence by evaluating whether clients (such as popular web browsers) were correctly handling the name constraints extension.</p>
-        <p>We later added an additional test suite for certificate path building because of the recurring pains we experienced during transitions in the web PKI ecosystem, such as intermediate CA expiry and signature algorithm deprecation. The goal is to help TLS implementations identify and verify changes that could alleviate these pain points and to help application developers pick TLS implementations that won't break during these transitions.</p>
-
-        <h1>Why "BetterTLS"?</h1>
-        <p>This project is inspired in part by <a href="https://badssl.com/">badssl.com</a>. In a similar vein, we want to highlight some of the issues and difficulties we've found with HTTPS/TLS implementations so that they can be corrected. By doing so, we hope to make TLS better for everyone.</p>
-
-        <h1>Contribute</h1>
-        <p>BetterTLS is <a href="https://github.com/Netflix/bettertls">open source software</a>. We encourage you to help add more tests, fix any issues you find in the existing test suites, or even fork it for use in your own software project. Pull requests are welcome!</p>
-    </div>
-    <div style="height: 1em"></div>
-    <div class="ui grid">
-        <div class="sixteen wide column center aligned">
-            <h2>Pick a Test Suite</h2>
+        <div class="ui top attached tabular menu">
+            <a class="active item" data-tab="about">About</a>
+            <a class="item" data-tab="updates">Updates</a>
+            <a class="item" data-tab="nameconstraints">Name Constraints</a>
+            <a class="item" data-tab="pathbuilding">Path Building</a>
+            <a class="item" data-tab="results">Archived Results</a>
         </div>
-        <div class="eight wide column">
-            <a href="/nameconstraints">
-                <button class="ui button main huge">
-                    <i class="icon unlock alternate"></i>
-                    Name Constraints
-                </button>
-            </a>
+        <div class="ui bottom attached active tab segment" data-tab="about">
+            <h1>What is BetterTLS?</h1>
+            <p>BetterTLS is a collection of test suites for TLS clients. At the moment, two test suites have been implemented. One tests a client's validation of the Name Constraints certificate extension. This extension is placed on CA certificates which restrict the DNS/IP space for which the CA (or sub-CAs) can issue certificates. The other test suite evaluates a TLS client's ability to discover a valid certificate path (a certificate "chain") from an unordered collection of certificates.<p>
+
+            <h1>Why BetterTLS?</h1>
+            <p>The BetterTLS project was originally created to ensure that we could create a name-constrained CA that could not be abused. We were only able to gain this confidence by evaluating whether clients (such as popular web browsers) were correctly handling the name constraints extension.</p>
+            <p>We later added an additional test suite for certificate path building because of the recurring pains we experienced during transitions in the web PKI ecosystem, such as intermediate CA expiry and signature algorithm deprecation. The goal is to help TLS implementations identify and verify changes that could alleviate these pain points and to help application developers pick TLS implementations that won't break during these transitions.</p>
+
+            <h1>Why "BetterTLS"?</h1>
+            <p>This project is inspired in part by <a href="https://badssl.com/">badssl.com</a>. In a similar vein, we want to highlight some of the issues and difficulties we've found with HTTPS/TLS implementations so that they can be corrected. By doing so, we hope to make TLS better for everyone.</p>
+
+            <h1>Test Results and Discussion</h1>
+            <p>This site contains archived test results. These test results were from the latest version of TLS implementations at the time they were run, though some are quite old now. For discussions and interpretation of these results, you should check out our <a href="https://netflixtechblog.com/bettertls-c9915cd255c0">blog post about Name Constraints</a> and the follow-up <a href="https://netflixtechblog.com/revisiting-bettertls-certificate-path-building-4c978b79843f">blog post about path building</a>.</p>
+
+            <h1>Testing Clients</h1>
+            <p>Clients and browsers can be tested using the code in the <a href="https://github.com/Netflix/bettertls">BetterTLS repository</a>. Check out the README for examples on how to do so.</p>
+
+            <h1>Contribute</h1>
+            <p>BetterTLS is <a href="https://github.com/Netflix/bettertls">open source software</a>. We encourage you to help add more tests, fix any issues you find in the existing test suites, or even fork it for use in your own software project. Pull requests are welcome!</p>
         </div>
-        <div class="eight wide column">
-            <a href="/pathbuilding">
-                <button class="ui button main huge">
-                    <i class="icon sitemap"></i>
-                    Path Building
-                </button>
-            </a>
+        <div class="ui bottom attached tab segment" data-tab="updates">
+            <h1>Update History</h1>
+            <h2>Dec 27, 2021</h2>
+            This release includes a refactor of the BetterTLS test suites and website. The latest test results were regenerated with new test executor, including execution of the Name Constraints test suite. Path building results are consistent with earlier results discussed in the blog post. Notable name constraints results include:
+            <ul class="ui list">
+                <li>curl 7.68.0 (linked against OpenSSL 1.1.1f) has a IP name constraints bypass when IP is included as a common name in the leaf certificate.</li>
+                <li>A number of implementations appear to exhibit "false positive" errors; i.e. rejecting certificates that are valid. (See the recent archived results for Edge and OpenSSL). This appears to be happening when an IP is included in the subject CN and an upstream CA has a DNS name constraints extension. Presumably, to be defensive against hostname verification that uses the subject CN, the certificate verification is matching the checking the name constraint extension against the CN even if it is an IP address. That said, it seems reasonable to lean into this defensiveness since it's unlikely to cause issues in practice.</li>
+            </ul>
+            <h2>Oct 14, 2021</h2>
+            Release of the path building test suite. Discussion and results summary available on the <a href="https://netflixtechblog.com/revisiting-bettertls-certificate-path-building-4c978b79843f">Netflix Tech Blog</a>.
+            <h2>Apr 10, 2017</h2>
+            Initial release. Discussion available on the <a href="https://netflixtechblog.com/bettertls-c9915cd255c0">Netflix Tech Blog</a>.
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="nameconstraints">
+            <h1>What is BetterTLS: Name Constraints?</h1>
+            <p>The Name Constraints test suite is a collection of tests for HTTPS clients implementing verification of the Name Constraints certificate extension. This extension is placed on CA certificates which restricts the DNS/IP space for which the CA (or sub-CAs) can issue certificates. One of the most common use-cases is for CAs to cross-certify another CA, but for a limited namespace. For example, Acme Corp. could sign a certificate for an intermediary CA but include a Name Constraints extension which blacklists the intermediate CA from signing certificates for acme.com.</p>
+            <p>Another use-case for the Name Constraints extension (which motivated this project) is as a way to reduce the risk exposure of trusting an internal CA. For example, we could create an internal CA which includes a Name Constraints extension with a whitelist of <span class="tt">internal.example.com</span> and <span class="tt">192.168.0.0/16</span>. A user who imports this CA into her browser's truststore can then be confident that this certificate will only be used for internal company pages and IPs and cannot be used to intercept secure communications with external websites.</p>
+            <p>However, the Name Constraints extension only provides these assurances if we can be confident that HTTPS clients properly enforce them...</p>
+
+            <h1>Why was this test suite created?</h1>
+            <p>In order to verify that the Name Constraints extension protects users from mis-issued certificates, we developed this test suite. As we did so, it became apparent that there are many different implementations of the certificate verification algorithm, each of which has corner cases that are not properly handled. Check out the archived results tab for examples of HTTPS clients with failing tests.</p>
+            <p>These are some examples of incorrect behavior we have observed when we developed this test suite:</p>
+            <ul>
+                <li>If a hostname is in the common name (CN) of the subject instead of the subject alternate name (SAN) extension, it may not be checked against the Name Constraints extension at all even when it is used as the hostname for verification.</li>
+                <li>Although RFCs suggest that only hostnames should appear in the common name (CN) of a certificate, many clients will still accept an IP address in the CN. However, these implementations do not always apply IP Name Constraints against the CN.</li>
+                <li>Some implementations show a certificate as valid when one subject name matches a Name Constraint blacklist but a second subject name does not. (The RFC specification makes it clear that validation should fail if <i>any</i> subject name is blacklisted.)</li>
+            </ul>
+            <p>Although this test suite certainly isn't exhaustive, the hope is that it provides a reference for developers to use in order to help verify that Name Constraints extensions are properly enforced in their TLS implementation.</p>
+
+            <h1>Name Constraints Documentation</h1>
+            <p>The Name Constraints extension along with its verification is defined in <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.10">RFC 5280</a>. Further useful information can be found in <a href="https://tools.ietf.org/html/rfc6125">RFC 6125</a> which defines how to identify a server's hostname from certificate extensions.</p>
+
+            <h1>About the tests</h1>
+            <p>This test suite looked at the typical fields implementations use to verify hostnames (i.e. including the hostname in the subject common name (CN) and using DNS and IP SANs) and the different ways of using the name constraints extension (whitelisting and blacklisting on either DNS or IP trees). The test suite generates a test case for all possible combinations of these.</p>
+
+            <h1>Interpreting test results</h1>
+            <p>The test executor first evaluates whether a given TLS implementation implements hostname validation. Some of the implementations under test only check if a certificate is valid and leave hostname verification to consuming applications.</p>
+            <p>As a TLS implementation consumer, it is important to understand if the TLS library is doing verification for you and, if not, what subject identifiers were included in name constraints checks. As noted above, many HTTPS clients have been observed to use a TLS library that checks SANs against name constraints but then also allow the subject common name (CN) to verify the required hostname.</p>
+            <p>It is therefore most useful to use this test suite against end-to-end HTTPS clients. Where that doesn't apply, make sure to pay attention to whether VALIDATE_DNS and VALIDATE_IP features are supported.</p>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="pathbuilding">
+            <h1>What is BetterTLS: Path Building?</h1>
+            <p>This test suite exercises the certificate path building capabilities of TLS implementations. Path building refers to the problem of building a valid, trusted chain from an end-entity's leaf certificate to a trust anchor. For background and motivation, we highly recommend you read <a href="https://medium.com/@sleevi_/path-building-vs-path-verifying-the-chain-of-pain-9fbab861d7d6">Ryan Sleevi's blog post</a> on this topic. The problem stated can be succinctly summarized with this excerpt:</p>
+
+            <div class="ui segment raised">
+                Often, when I talk to people who are responsible for configuring certificates on their servers, they often talk about _the_ certificate chain. ... [But] there are many chains, with <a href="https://blog.cloudflare.com/introducing-cfssl/">different chains are needed by different clients</a>, who have different root stores and different behaviors.
+            </div>
+
+            <p>Historically the TLS specifications have not required that TLS implementations support particularly robust certificate path building. In practice many of them (such as OpenSSL at the time of writing) don't support verifying anything other than a simple, non-branching sequence of certificates. This has changed in the <a href="https://datatracker.ietf.org/doc/html/rfc8446#section-4.4.2">specification for TLS 1.3</a> which advises that implementations SHOULD support more robust certificate path building:</p>
+
+            <div class="ui segment raised">
+                Note: Prior to TLS 1.3, "certificate_list" ordering required each certificate to certify the one immediately preceding it; however, some implementations allowed some flexibility. Servers sometimes send both a current and deprecated intermediate for transitional purposes, and others are simply configured incorrectly, but these cases can nonetheless be validated properly. For maximum compatibility, all implementations SHOULD be prepared to handle potentially extraneous certificates and arbitrary orderings from any TLS version, with the exception of the end-entity certificate which MUST be first.
+            </div>
+
+            <p>This test suite can be applied to TLS implementations to not only verify whether they satisfy the above provision, but whether they are doing so correctly.</p>
+
+            <p>Check out our <a href="https://netflixtechblog.com/revisiting-bettertls-certificate-path-building-4c978b79843f">blog post</a> for a summary of results from common TLS implementations at the time this suite was created.</p>
+
+            <h1>Why does this matter?</h1>
+            <p>The web PKI ecosystem is a shifting landscape. Features like what certificate authorities are trusted, what algorithms should be used, and what X.509 certificate extensions can (and should) be enforced have been changing every year. Service owners need to keep up with these changes while also ensuring that existing clients are able to reach their service.</p>
+            <p>For example, the <a href="https://letsencrypt.org/certificates/">Let's Encrypt R3 CA</a> has two certificates; one signed by "DST Root CA X3" and one signed by "ISRG Root X1". Older clients only trusted the <a href="https://crt.sh/?id=8395">self-signed DST Root CA X3 certificate</a>, usually since they were built before the ISRG Root X1 CA had made its way into broadly distributed truststores. However, newer clients only trust the ISRG Root X1 CA since the DST Root CA X3 self-signed certificate expired on September 30, 2021. Ideally, service owners would be able to send <span style="font-style: italic">both</span> the <a href="https://crt.sh/?id=3479778542">DST Root CA X3 => R3</a> and <a href="https://crt.sh/?id=3334561879">ISRG Root X1 => R3</a> certificate so that any client can verify their trust of the Let's Encrypt R3 CA and ultimately verify their trust in the end entity certificate. In practice, many clients are not able to handle getting muiltple potential paths in a TLS response and this leaves both clients and service operators <a href="https://status.catchpoint.com/incidents/f5yl89kygf12">subject to outages</a>.</p>
+            <p>In general, having clients with a robust certificate path building allows the community to be more agile and make changes to the web PKI ecosystem over time while reducing risk of breaking older clients. Here are just a few examples of these sorts of changes in the past:</p>
+
+            <ul class="ui list">
+                <li><a href="https://scotthelme.co.uk/are-you-ready-for-the-symantec-distrust/">Distrust of the Symantec CA</a></li>
+                <li><a href="https://www.venafi.com/education-center/ssl/sha-1-deprecation">Deprecation of signing algorithms using SHA-1</a></li>
+                <li><a href="https://www.agwa.name/blog/post/fixing_the_addtrust_root_expiration">Expiration of the AddTrust CA</a></li>
+                <li><a href="https://support.apple.com/en-us/HT211025">Apple's restriction of certificate validity to 398 days</a></li>
+            </ul>
+
+            <p>At a minimum, this test suite can help inform service owners about how much path building different TLS client implementations support so that they can determine how clients will be impacted by changes to their service's TLS configuration and certificates.</p>
+
+            <h1>About the tests</h1>
+            <h2>Trust Graphs</h2>
+            <p>All of the tests in this suite utilize a <span style="font-style: italic">Trust Graph</span>.  A Trust Graph is a directed graph where the nodes represent potentially trusted entities (a Distinguished Name and a public key) and the edges represent a certificate. Consider the following example which defines the "TWO_ROOTS" trust graph:</p>
+
+            <pre>
++--------+
+| Root 1 |======v
++--------+      +-----+         +----+
+                | ICA | ======> | EE |
++--------+      +-----+         +----+
+| Root 2 |======^
++--------+</pre>
+
+            <p>There are two root CAs, both of which have created a certificate for an intermediate CA (ICA), which ultimately creates certificates for the end entity (EE). The end entity (a service owner) doesn't know in general which root is trusted by clients, so it will always send <span style="font-style: italic">three</span> certificates to clients: the leaf certificate for the end entity signed by ICA (ICA => EE), a certificate for the ICA signed by Root 1 (Root 1 => ICA), and a certificate for the ICA signed by Root 2 (Root 2 => ICA). Clients which support path building should be able to verify trust in EE whether they trust Root 1 or Root 2 as a trust anchor. Put another way, the presence of a certificate which leads to a non-trusted root should not prohibit the client's ability to find and verify a chain.</p>
+
+            <h2>Invalid Edges</h2>
+
+            <p>To verify that clients support <span style="font-style: italic">robust</span> path building, test cases can mark an edge in the Trust Graph as <span style="font-style: italic">invalid</span>. The test suite supports several reasons for an edge being invalid (see the next section) such as the certificate being expired. When there are multiple paths to a trust anchor, a robust client should be able to find a path to the trust anchor despite invalid edges. Put another way, clients should not just find any path and then verify it; they must check that each edge is valid as they build a path.</p>
+
+            <p>Consider the following trust graph copied from <a href="https://datatracker.ietf.org/doc/html/rfc4158#section-2.3">RFC 4158 figure 7</a>:</p>
+
+            <pre>
+     +---------+
+     |  Trust  |
+     | Anchor  |
+     +---------+
+      |       |
+      v       v
+   +---+    +---+
+   | A |<-->| C |
+   +---+    +---+
+    |         |
+    |  +---+  |
+    +->| B |<-+
+       +---+
+         |
+         v
+       +----+
+       | EE |
+       +----+</pre>
+
+            <p>If the certificate "Trust Anchor => A" is expired a client should still be able to find a path from "Trust Anchor" down to "EE" (and similarly if the "Trust Achor => C" certificate is expired).</p>
+
+            <h2>Invalid Edge Reasons</h2>
+
+            <p>This test suite supports several reasons for an edge being invalid as described below. Some of these reasons MUST be supported by any TLS implementation, such as a certificate being expired. Other reasons are not strictly required, such as the certificate using a deprecated signature algorithm (i.e. using SHA-1).</p>
+
+            <h3>EXPIRED</h3>
+            <p>The certificate's NotAfter time is before now. All TLS implementations must support this.</p>
+
+            <h3>NAME_CONSTRAINTS</h3>
+            <p>The certificate has a name constraints extension that is at odds with the end-entity certificate. This extension is marked as critical by this test suite, so all implementations should support this.</p>
+
+            <h3>BAD_EKU</h3>
+            <p>The certificate has an <a href="https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.12">Extended Key Usage</a> extension that is incompatible with the end-entity's use of the certificate for TLS server authentication. The <a href="https://wiki.mozilla.org/CA:CertificatePolicyV2.1#Frequently_Asked_Questions">Mozilla Certificate Policy FAQ</a> states:</p>
+
+            <div class="ui segment raised">
+                Inclusion of EKU in CA certificates is generally allowed. NSS and CryptoAPI both treat the EKU extension in intermediate certificates as a constraint on the permitted EKU OIDs in end-entity certificates. Browsers and certificate client software have been using EKU in intermediate certificates, and it has been common for enterprise subordinate CAs in Windows environments to use EKU in their intermediate certificates to constrain certificate issuance.
+            </div>
+
+            <p>So while most implementations support the semantics of an incompatible EKU in CAs as a reason to treat a certificate as invalid, RFCs do not require this behavior so this might not be supported by all TLS implementations.</p>
+
+            <h3>MISSING_BASIC_CONSTRAINTS</h3>
+            <p>The certificate is missing the <a href="https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.9">Basic Constraints</a> extension. RFC 5280 requires that all CAs have this extension, so all implementations should support this.</p>
+
+            <h3>NOT_A_CA</h3>
+            <p>The certificate has a basic constraints extension, but it does not identify the certificate as being a CA. Similarly to the above, all implementations should support this.</p>
+
+            <h3>DEPRECATED_CRYPTO</h3>
+            <p>The certificate is signed with an algorithm that has been considered deprecated (i.e. using SHA-1). Enforcement of SHA-1 deprecation is not universally present in all TLS implementations.</p>
+
+            <h1>Interpreting test results</h1>
+            <p>The test executor first evaluates whether a given TLS implementation supports branching certificate chains at all (using the TWO_ROOTS trust graph described above). If it doesn't, most tests in the suite will be skipped. As noted above, according to RFC 8446 any TLS implementation supporting TLS 1.3 SHOULD support branching certificate chains.</p>
+
+            <p>The test executor also tests whether each Invalid Reason described above is supported by the TLS implementation. It is reasonable for some of them (such as BAD_EKU and DEPRECATED_CRYPTO) to not be supported and subsequent test cases that use those Invalid Reasons will be skipped.</p>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="results">
+            <p>This is a collection of saved test results. This test executor detects supported features (such as distrusting certificates with a deprecated signature algorithm and whether path building is supported at all) and skips tests that rely on unsupported features. To make sense of results, you should not only consider failed tests but see which were not even run.</p>
+            <p>Check out our <a href="https://netflixtechblog.com/bettertls-c9915cd255c0">name constraints</a> and <a href="https://netflixtechblog.com/revisiting-bettertls-certificate-path-building-4c978b79843f">path building</a> blog posts for some discussion of these results.</p>
+            
+            <div id="view_test_results">
+                <div class="ui selection dropdown fluid results_select">
+                    <input type="hidden">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">Select Results</div>
+                    <div class="menu">
+                        <div class="header">Dec 2021</div>
+                        <div class="divider"></div>
+                        <div class="item" data-value="dec_2021/boringssl_a406ad7">BoringSSL (a406ad7)</div>
+                        <div class="item" data-value="dec_2021/chrome_macos_97.0.4692.56">Chrome (97.0.4692.56), MacOS 11.6.2</div>
+                        <div class="item" data-value="dec_2021/chrome_win64_96.0.4664.110">Chrome (96.0.4664.110), Windows</div>
+                        <div class="item" data-value="dec_2021/chromium_linux64_96.0.4664.110">Chromium (96.0.4664.110), Linux</div>
+                        <div class="item" data-value="dec_2021/curl_7.68.0">curl (7.68.0), OpenSSL/1.1.1f</div>
+                        <div class="item" data-value="dec_2021/edge_win64_94.0.992.38">Edge (94.0.992.38), Windows</div>
+                        <div class="item" data-value="dec_2021/firefox_linux64_95.0">Firefox (95.0), Linux</div>
+                        <div class="item" data-value="dec_2021/gnutls_3.6.13">GnuTLS (3.6.13)</div>
+                        <div class="item" data-value="dec_2021/gnutls_3.7.2">GnuTLS (3.7.2)</div>
+                        <div class="item" data-value="dec_2021/go_1.18beta1">Go (1.18beta1)</div>
+                        <div class="item" data-value="dec_2021/java_1.8.0_292">Java (1.8.0_292)</div>
+                        <div class="item" data-value="dec_2021/java_11.0.11">Java (11.0.11)</div>
+                        <div class="item" data-value="dec_2021/java_17.0.1">Java (17.0.1)</div>
+                        <div class="item" data-value="dec_2021/libressl_3.4.0">LibreSSL (3.4.0)</div>
+                        <div class="item" data-value="dec_2021/openssl_1.1.1f">OpenSSL (1.1.1f)</div>
+                        <div class="item" data-value="dec_2021/openssl_1.1.1l">OpenSSL (1.1.1l)</div>
+                        <div class="item" data-value="dec_2021/openssl_3.0.1">OpenSSL (3.0.1)</div>
+                        <div class="item" data-value="dec_2021/pkijs_2.2.1">PKI.js (2.2.1)</div>
+                        <div class="item" data-value="dec_2021/rustls_0.20.2">Rustls (0.20.2)</div>
+                        <div class="item" data-value="dec_2021/safari_macos_605.1.15">Safari (605.1.25), MacOS 11.6.2</div>
+                        <div class="divider"></div>
+                        <div class="header">circa Jan 2017</div>
+                        <div class="divider"></div>
+                        <div class="item" data-value="dec_2016/chrome_55_osx10">chrome_55_osx10.json</div>
+                        <div class="item" data-value="dec_2016/chrome_55_windows">chrome_55_windows.json</div>
+                        <div class="item" data-value="dec_2016/chrome_61_osx10">chrome_61_osx10.json</div>
+                        <div class="item" data-value="dec_2016/chrome_61_windows">chrome_61_windows.json</div>
+                        <div class="item" data-value="dec_2016/chrome_63_osx10.13.3">chrome_63_osx10.13.3.json</div>
+                        <div class="item" data-value="dec_2016/chromium_55_linux">chromium_55_linux.json</div>
+                        <div class="item" data-value="dec_2016/chromium_60_linux">chromium_60_linux.json</div>
+                        <div class="item" data-value="dec_2016/curl_7.50.1_linux">curl_7.50.1_linux.json</div>
+                        <div class="item" data-value="dec_2016/edge_14_windows">edge_14_windows.json</div>
+                        <div class="item" data-value="dec_2016/firefox_50_linux">firefox_50_linux.json</div>
+                        <div class="item" data-value="dec_2016/firefox_50_osx10">firefox_50_osx10.json</div>
+                        <div class="item" data-value="dec_2016/firefox_50_windows">firefox_50_windows.json</div>
+                        <div class="item" data-value="dec_2016/go_1.10.3_linux">go_1.10.3_linux.json</div>
+                        <div class="item" data-value="dec_2016/java_1.8.0_111_linux">java_1.8.0_111_linux.json</div>
+                        <div class="item" data-value="dec_2016/java_1.9.0_149_linux">java_1.9.0_149_linux.json</div>
+                        <div class="item" data-value="dec_2016/lua_5.2_linux">lua_5.2_linux.json</div>
+                        <div class="item" data-value="dec_2016/node_4.4.4_linux">node_4.4.4_linux.json</div>
+                        <div class="item" data-value="dec_2016/node_6.9.4_linux">node_6.9.4_linux.json</div>
+                        <div class="item" data-value="dec_2016/openssl_1.1.0f_linux">openssl_1.1.0f_linux.json</div>
+                        <div class="item" data-value="dec_2016/python_2.7.13_linux">python_2.7.13_linux.json</div>
+                        <div class="item" data-value="dec_2016/python_3.5.3_linux">python_3.5.3_linux.json</div>
+                        <div class="item" data-value="dec_2016/ruby_2.4.1_linux">ruby_2.4.1_linux.json</div>
+                        <div class="item" data-value="dec_2016/safari_602_osx10">safari_602_osx10.json</div>
+                        <div class="item" data-value="dec_2016/safari_604_osx10.13.3">safari_604_osx10.13.3.json</div>
+                        <div class="item" data-value="dec_2016/safari_604_osx10">safari_604_osx10.json</div>
+                    </div>
+                </div>
+
+                <h1>Summary</h1>
+                <table class="ui definition table">
+                    <tbody>
+                    <tr>
+                        <td class="four wide">Implementation</td>
+                        <td class="twelve wide"><p class="implementation"></p></td>
+                    </tr>
+                    <tr>
+                        <td>Version</td>
+                        <td><p class="version"></p></td>
+                    </tr>
+                    <tr>
+                        <td>Date</td>
+                        <td><p class="date"></p></td>
+                    </tr>
+                    <tr>
+                        <td>Supported Features</td>
+                        <td class="supportedFeatures"></td>
+                    </tr>
+                    <tr>
+                        <td>Unsupported Features</td>
+                        <td class="unsupportedFeatures"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <h1>Test Result Summary</h1>
+                <table class="ui structured table">
+                    <thead></thead>
+                    <tbody class="test_result_summary"></tbody>
+                </table>
+
+                <h1>Complete Test Results</h1>
+                <table class="test_results">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 <script src="//code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
 <script src="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js" integrity="sha384-HtPdw6a7QeUoz9fgdEIk3iL4WifPUg7BuiWndgaxmBDiCHMYfOO2nEJ9J3YPg6+S" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    $('.menu .item').tab();
+</script>
+
+<!-- For viewing test results -->
+<script src="//cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js" integrity="sha384-Ys7dhgZ13dNQE2uo7PY+FIKiwwu0WNSnKCAOPPNoC9KT+fW+OAh+Ym0z3eiREmpZ" crossorigin="anonymous"></script>
+<script src="https://cdn.rawgit.com/dcodeIO/protobuf.js/6.11.2/dist/protobuf.min.js" integrity="sha384-MBDRVA4avkir016YP92Fh9y9Weh5rX74xOE7GTRVZA8KBsr771Dl8ZOb52NQhHDV" crossorigin="anonymous"></script>
+<script src="test_results.js"></script>
+<script src="https://unpkg.com/pako@2.0.4/dist/pako.es5.min.js" integrity="sha384-H2SssWB3Hv1GhnoquFfkLlQ2//eDQQ42SH5vNOzDe1s0zR5NnVrs3KbxQvSiU4+1" crossorigin="anonymous"></script>
+<script src="view_test_results.js"></script>
+
 </body>
 </html>
