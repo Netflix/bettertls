@@ -109,6 +109,13 @@ type ExtraSan struct {
 	value []byte
 }
 
+func (es *ExtraSan) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"tag":   es.tag,
+		"value": es.value,
+	})
+}
+
 func (n NameConstraintsTestCase) ExpectedResult() test_case.ExpectedResult {
 	isSoftFail := false
 	isSoftPass := false
