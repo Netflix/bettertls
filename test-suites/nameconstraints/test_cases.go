@@ -101,6 +101,12 @@ type NameConstraintsTestCase struct {
 	NameConstraintsDnsWhitelist TrinaryValue
 	NameConstraintsIpBlacklist  TrinaryValue
 	NameConstraintsDnsBlacklist TrinaryValue
+	ExtraSan                    *ExtraSan
+}
+
+type ExtraSan struct {
+	tag   int
+	value []byte
 }
 
 func (n NameConstraintsTestCase) ExpectedResult() test_case.ExpectedResult {
@@ -342,17 +348,36 @@ func (n NameConstraintsTestCase) GetCertificates(rootCert *x509.Certificate, roo
 		BasicConstraintsValid: true,
 		IsCA:                  false,
 	}
+	var sans []*ExtraSan
 	if n.DnsSan == EXTVAL_VALID {
-		leafTemplate.DNSNames = []string{VALID_DNS_NAME}
+		sans = append(sans, &ExtraSan{tag: nameTypeDNS, value: []byte(VALID_DNS_NAME)})
 	}
 	if n.DnsSan == EXTVAL_INVALID {
-		leafTemplate.DNSNames = []string{INVALID_DNS_NAME}
+		sans = append(sans, &ExtraSan{tag: nameTypeDNS, value: []byte(INVALID_DNS_NAME)})
 	}
 	if n.IpSan == EXTVAL_VALID {
-		leafTemplate.IPAddresses = []net.IP{net.ParseIP(VALID_IP)}
+		rawIp := net.ParseIP(VALID_IP)
+		if ip := rawIp.To4(); ip != nil {
+			rawIp = ip
+		}
+		sans = append(sans, &ExtraSan{tag: nameTypeIP, value: rawIp})
 	}
 	if n.IpSan == EXTVAL_INVALID {
-		leafTemplate.IPAddresses = []net.IP{net.ParseIP(INVALID_IP)}
+		rawIp := net.ParseIP(INVALID_IP)
+		if ip := rawIp.To4(); ip != nil {
+			rawIp = ip
+		}
+		sans = append(sans, &ExtraSan{tag: nameTypeIP, value: rawIp})
+	}
+	if n.ExtraSan != nil {
+		sans = append(sans, n.ExtraSan)
+	}
+	if len(sans) > 0 {
+		sanExt, err := buildSanExtension(false, sans)
+		if err != nil {
+			return nil, err
+		}
+		leafTemplate.ExtraExtensions = append(leafTemplate.ExtraExtensions, sanExt)
 	}
 
 	leafKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
