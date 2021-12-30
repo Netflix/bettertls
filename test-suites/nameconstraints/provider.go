@@ -3,6 +3,7 @@ package nameconstraints
 import (
 	"fmt"
 	test_case "github.com/Netflix/bettertls/test-suites/test-case"
+	"net"
 )
 
 type TestCaseProvider struct {
@@ -121,6 +122,43 @@ func NewTestCaseProvider() *TestCaseProvider {
 					}
 				}
 			}
+		}
+	}
+
+	// Try encoding the client-requested hostname/IP into SANs with other tags
+	for sanTag := 0; sanTag < 16; sanTag++ {
+		// Encode the DNS hostname into SANs with a violating NC (both whitelist and blacklist)
+		testCases = append(testCases, NameConstraintsTestCase{
+			ClientHostnameType:          CLIENT_HOSTNAME_TYPE_DNS,
+			DnsSan:                      EXTVAL_INVALID,
+			NameConstraintsDnsWhitelist: EXTVAL_INVALID,
+			ExtraSan:                    &ExtraSan{tag: sanTag, value: []byte(VALID_DNS_NAME)},
+		})
+		testCases = append(testCases, NameConstraintsTestCase{
+			ClientHostnameType:          CLIENT_HOSTNAME_TYPE_DNS,
+			DnsSan:                      EXTVAL_INVALID,
+			NameConstraintsDnsBlacklist: EXTVAL_VALID,
+			ExtraSan:                    &ExtraSan{tag: sanTag, value: []byte(VALID_DNS_NAME)},
+		})
+		validIp := net.ParseIP(VALID_IP)
+		if ip := validIp.To4(); ip != nil {
+			validIp = ip
+		}
+
+		// Add tests that attempt to encode the IP as both its raw bytes and stringified, also for both whilelist and blacklist NCs.
+		for _, ipEncoding := range [][]byte{validIp, []byte(VALID_IP)} {
+			testCases = append(testCases, NameConstraintsTestCase{
+				ClientHostnameType:         CLIENT_HOSTNAME_TYPE_IP,
+				IpSan:                      EXTVAL_INVALID,
+				NameConstraintsIpWhitelist: EXTVAL_INVALID,
+				ExtraSan:                   &ExtraSan{tag: sanTag, value: ipEncoding},
+			})
+			testCases = append(testCases, NameConstraintsTestCase{
+				ClientHostnameType:         CLIENT_HOSTNAME_TYPE_IP,
+				IpSan:                      EXTVAL_INVALID,
+				NameConstraintsIpBlacklist: EXTVAL_VALID,
+				ExtraSan:                   &ExtraSan{tag: sanTag, value: ipEncoding},
+			})
 		}
 	}
 
