@@ -11,13 +11,14 @@ type ImplementationRunner interface {
 }
 
 var Runners = map[string]ImplementationRunner{
-	"boringssl": &BoringSslRunner{},
-	"curl":      &CurlRunner{},
-	"gnutls":    &GnutlsRunner{},
-	"golang":    &GolangRunner{},
-	"java":      &JavaRunner{},
-	"libressl":  &LibresslRunner{},
-	"openssl":   &OpensslRunner{},
-	"pkijs":     &PkijsRunner{},
-	"rustls":    &RustlsRunner{},
+	"boringssl":       &BoringSslRunner{},
+	"curl":            &CurlRunner{},
+	"gnutls":          &GnutlsRunner{},
+	"golang":          &GolangRunner{},
+	"java":            &JavaRunner{},
+	"libressl":        &LibresslRunner{},
+	"openssl":         &OpensslRunner{},
+	"pkijs":           &PkijsRunner{},
+	"python_requests": &PythonRequestsRunner{},
+	"rustls":          &RustlsRunner{},
 }
