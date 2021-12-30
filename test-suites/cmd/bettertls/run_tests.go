@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/Netflix/bettertls/test-suites/impltests"
+	int_set "github.com/Netflix/bettertls/test-suites/int-set"
 	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
 	"github.com/golang/protobuf/proto"
 	"github.com/schollz/progressbar/v3"
@@ -29,8 +30,8 @@ func runTests(args []string) error {
 	flagSet.StringVar(&implementation, "implementation", "", "Implementation to test.")
 	var suite string
 	flagSet.StringVar(&suite, "suite", "", "Run only the given suite instead of all suites.")
-	var testCase int
-	flagSet.IntVar(&testCase, "testCase", -1, "Run only the given test case in the suite instead of all tests. Requires --suite to be sepecified as well.")
+	testCases := new(int_set.IntSet)
+	flagSet.Var(testCases, "testCase", "Run only the given test case(s) in the suite instead of all tests. Requires --suite to be specified as well. Use \"123,456-789\" syntax to include a range or set of cases.")
 	var outputDir string
 	flagSet.StringVar(&outputDir, "outputDir", ".", "Directory to which test results will be written.")
 
@@ -66,7 +67,7 @@ func runTests(args []string) error {
 		var bar *progressbar.ProgressBar
 		ctx := &test_executor.ExecutionContext{
 			RunOnlySuite: suite,
-			RunOnlyTest:  testCase,
+			RunOnlyTests: testCases,
 			OnStartSuite: func(suite string, testCount uint) {
 				bar = progressbar.Default(int64(testCount), runner.Name()+"/"+suite)
 				progressbar.OptionSetItsString("tests")(bar)

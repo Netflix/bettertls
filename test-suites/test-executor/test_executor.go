@@ -2,6 +2,7 @@ package test_executor
 
 import (
 	"fmt"
+	int_set "github.com/Netflix/bettertls/test-suites/int-set"
 	test_case "github.com/Netflix/bettertls/test-suites/test-case"
 )
 
@@ -11,7 +12,7 @@ type ExecutionContext struct {
 	OnFinishTest  func(idx uint)
 	OnFinishSuite func(suite string)
 	RunOnlySuite  string
-	RunOnlyTest   int
+	RunOnlyTests  *int_set.IntSet
 }
 
 func ExecuteAllTestsLocal(ctx *ExecutionContext, suites *TestSuites, execTest func(hostname string, certificates [][]byte) (bool, error)) (map[string]*SuiteTestResults, error) {
@@ -129,7 +130,8 @@ func executeTestsForProvider(ctx *ExecutionContext, provider test_case.TestCaseP
 
 	results := make([]TestCaseResult, testCaseCount)
 	for idx := uint(0); idx < testCaseCount; idx += 1 {
-		if ctx != nil && ctx.RunOnlyTest >= 0 && uint(ctx.RunOnlyTest) != idx {
+		if ctx != nil && ctx.RunOnlyTests != nil && !ctx.RunOnlyTests.Empty() && !ctx.RunOnlyTests.Contains(int(idx)) {
+			results[idx] = TestCaseResult_SKIPPED
 			continue
 		}
 		if ctx != nil && ctx.OnStartTest != nil {
