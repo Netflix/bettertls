@@ -395,13 +395,9 @@ func (n NameConstraintsTestCase) GetCertificates(rootCert *x509.Certificate, roo
 	if err != nil {
 		return nil, err
 	}
-	leafCert, err := x509.ParseCertificate(leafCertBytes)
-	if err != nil {
-		return nil, err
-	}
 
 	return &tls.Certificate{
-		Certificate: [][]byte{leafCert.Raw, localIca.Raw, localRoot.Raw, rootCert.Raw},
+		Certificate: [][]byte{leafCertBytes, localIca.Raw, localRoot.Raw, rootCert.Raw},
 		PrivateKey:  leafKey,
 	}, nil
 

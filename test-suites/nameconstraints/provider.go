@@ -20,7 +20,7 @@ const (
 )
 
 func NewTestCaseProvider() *TestCaseProvider {
-	testCases := make([]NameConstraintsTestCase, 6, 8754)
+	testCases := make([]NameConstraintsTestCase, 6, 9491)
 
 	testCases[SANITY_CHECK_TEST_CASE] = NameConstraintsTestCase{
 		ClientHostnameType:          CLIENT_HOSTNAME_TYPE_DNS,
@@ -94,6 +94,13 @@ func NewTestCaseProvider() *TestCaseProvider {
 		NameConstraintsDnsBlacklist: EXTVAL_NONE,
 	}
 
+	testCases = append(testCases, NameConstraintsTestCase{
+		ClientHostnameType:          CLIENT_HOSTNAME_TYPE_DNS,
+		DnsSan:                      EXTVAL_INVALID,
+		NameConstraintsDnsBlacklist: EXTVAL_VALID,
+		ExtraSan:                    &ExtraSan{tag: 6, value: []byte("http://foo.bar, DNS:" + VALID_DNS_NAME)},
+	})
+
 	for _, clientHostnameType := range []ClientHostnameType{CLIENT_HOSTNAME_TYPE_DNS, CLIENT_HOSTNAME_TYPE_IP} {
 		for _, commonNameType := range []CommonNameType{CN_TYPE_DNS, CN_TYPE_IP} {
 			for _, commonNameValue := range ALL_TRINARY_VALUES {
@@ -127,19 +134,25 @@ func NewTestCaseProvider() *TestCaseProvider {
 
 	// Try encoding the client-requested hostname/IP into SANs with other tags
 	for sanTag := 0; sanTag < 16; sanTag++ {
-		// Encode the DNS hostname into SANs with a violating NC (both whitelist and blacklist)
-		testCases = append(testCases, NameConstraintsTestCase{
-			ClientHostnameType:          CLIENT_HOSTNAME_TYPE_DNS,
-			DnsSan:                      EXTVAL_INVALID,
-			NameConstraintsDnsWhitelist: EXTVAL_INVALID,
-			ExtraSan:                    &ExtraSan{tag: sanTag, value: []byte(VALID_DNS_NAME)},
-		})
-		testCases = append(testCases, NameConstraintsTestCase{
-			ClientHostnameType:          CLIENT_HOSTNAME_TYPE_DNS,
-			DnsSan:                      EXTVAL_INVALID,
-			NameConstraintsDnsBlacklist: EXTVAL_VALID,
-			ExtraSan:                    &ExtraSan{tag: sanTag, value: []byte(VALID_DNS_NAME)},
-		})
+		// Encode the DNS hostname into SANs with a violating NC (both whitelist and blacklist). Try encoding it with
+		// the raw DNS name and also with a few URI schemes with the valid DNS name in the hostname component
+		for _, hostnameEncoding := range []string{VALID_DNS_NAME,
+			"http://" + VALID_DNS_NAME, "https://" + VALID_DNS_NAME, "spiffe://" + VALID_DNS_NAME, "unspec://" + VALID_DNS_NAME,
+		} {
+			testCases = append(testCases, NameConstraintsTestCase{
+				ClientHostnameType:          CLIENT_HOSTNAME_TYPE_DNS,
+				DnsSan:                      EXTVAL_INVALID,
+				NameConstraintsDnsWhitelist: EXTVAL_INVALID,
+				ExtraSan:                    &ExtraSan{tag: sanTag, value: []byte(hostnameEncoding)},
+			})
+			testCases = append(testCases, NameConstraintsTestCase{
+				ClientHostnameType:          CLIENT_HOSTNAME_TYPE_DNS,
+				DnsSan:                      EXTVAL_INVALID,
+				NameConstraintsDnsBlacklist: EXTVAL_VALID,
+				ExtraSan:                    &ExtraSan{tag: sanTag, value: []byte(hostnameEncoding)},
+			})
+		}
+
 		validIp := net.ParseIP(VALID_IP)
 		if ip := validIp.To4(); ip != nil {
 			validIp = ip
@@ -161,6 +174,31 @@ func NewTestCaseProvider() *TestCaseProvider {
 			})
 		}
 	}
+
+	// Attempt to smuggle additional SANs using separator strings. For example, old versions of Node would split based on ", ".
+	for _, separator := range []string{", ", ",", ";", ":"} {
+		for _, prefix := range []string{"", "DNS:"} {
+			for _, leadingSan := range []string{INVALID_DNS_NAME, "http://" + INVALID_DNS_NAME} {
+				sanValue := []byte(leadingSan + separator + prefix + VALID_DNS_NAME)
+				for sanTag := 0; sanTag < 16; sanTag++ {
+					testCases = append(testCases, NameConstraintsTestCase{
+						ClientHostnameType:          CLIENT_HOSTNAME_TYPE_DNS,
+						DnsSan:                      EXTVAL_INVALID,
+						NameConstraintsDnsWhitelist: EXTVAL_INVALID,
+						ExtraSan:                    &ExtraSan{tag: sanTag, value: sanValue},
+					})
+					testCases = append(testCases, NameConstraintsTestCase{
+						ClientHostnameType:          CLIENT_HOSTNAME_TYPE_DNS,
+						DnsSan:                      EXTVAL_INVALID,
+						NameConstraintsDnsBlacklist: EXTVAL_VALID,
+						ExtraSan:                    &ExtraSan{tag: sanTag, value: sanValue},
+					})
+				}
+			}
+		}
+	}
+
+	// Adding more test cases? Be a pal and remember to update the testCases slice's capacity at the top.
 
 	return &TestCaseProvider{
 		testCases: testCases,
