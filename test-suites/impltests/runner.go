@@ -17,6 +17,7 @@ var Runners = map[string]ImplementationRunner{
 	"golang":          &GolangRunner{},
 	"java":            &JavaRunner{},
 	"libressl":        &LibresslRunner{},
+	"node":            &NodeRunner{},
 	"openssl":         &OpensslRunner{},
 	"pkijs":           &PkijsRunner{},
 	"python_requests": &PythonRequestsRunner{},
