@@ -149,6 +149,8 @@ $ go run ./cmd/bettertls get-test --suite pathbuilding --testId 57 | jq .
 
 # Testing additional TLS implementations
 
+## Execting tests with the embedded test runner
+
 To add a new implementation to be tested, you will need to implement the [impltests.ImplementationRunner](test-suites/impltests/runner.go) interface.
 The easiest way to implement this interface to follow the pattern of one of the existing implementations, which invokes the TLS implementation as a separate process for each test case.
 
@@ -160,3 +162,115 @@ If it makes more sense to test your implementation by passing in the certificate
 
 Once you have create your implementation, add it to the [`Runners` map](test-suites/impltests/runner.go).
 You will then be able to run `go run ./cmd/bettertls run-tests --implementation my_impl`.
+
+## Exporting tests to run outside of the BetterTLS executor
+
+For many use cases it might be easier to export tests from BetterTLS so that you can run tests in your implementations own test harness.
+The bettertls executable has an `export-tests` command which will write all tests in a JSON format that you can use in your own project.
+
+If you have checked out the bettertls repository then you can run:
+```
+go run ./cmd/bettertls export-tests --out tests.json
+```
+
+Or without checking out the repository:
+```
+GOBIN=$PWD go install github.com/Netflix/bettertls/test-suites/cmd/bettertls@latest
+./bettertls export-tests --out tests.json
+```
+
+The following is an abbreviated example of what gets exported:
+
+```
+{
+  "betterTlsRevision": "939077295c05d36c53f1f386fc3ec55167360f3a",
+  "trustRoot": "MII...",
+  "suites": {
+    "nameconstraints": {
+      "features": ["NAME_CONSTRAINTS", "VALIDATE_DNS", "VALIDATE_IP"],
+      "sanityCheckTestCase": 0,
+      "featureTestCases": {
+        "NAME_CONSTRAINTS": [1],
+        "VALIDATE_DNS": [2,3],
+        "VALIDATE_IP": [4,5]
+      },
+      "testCases": [
+        {
+          "certificates": [
+            "MII...",
+            ...
+          ],
+          "hostname": "test.localhost",
+          "requiredFeatures": [],
+          "expected": "ACCEPT",
+          "failureIsWarning": false
+        },
+        ...
+      ]
+    }
+  }
+}
+```
+
+**Top-Level Export**
+
+| Field Name | Description |
+| --- | --- |
+| betterTlsRevision | The BetterTLS git revision used when building/running the binary. Tests may change over time, so this can help determine exactly how a test case was generated. |
+| trustRoot | A certificate that should be used as the (only) trust anchor for all tests. Base64-encoded DER format. |
+| suites | An object of the exported test suites. Keys are the suite name and values are described in the TestSuite table below. |
+
+**TestSuite**
+
+| Field Name | Description |
+| --- | --- |
+| features | The various implementation features for the test suite. Refer to the features section below for what each feature means. |
+| sanityCheckTestCase | The index of a test that does not require any features and should pass. This is mostly useful to ensure your test harness and trust store has been set up properly. |
+| featureTestCases | A map from each feature to an array of test indices. To determine if an implementation supports a given feature, all the given test cases should pass. |
+| testCases | An array of the test cases, as described below. |
+
+**TestCase**
+
+| Field Name | Description |
+| --- | --- |
+| certificates | The array of certificates for the test case, leaf first. Certificates are Base64-encoded DER format. |
+| hostname | The hostname that should be used by the client for subject name verification. This may be a DNS name or a stringified IP address. |
+| requiredFeatures | An array of features that the TLS implementation needs in order to run this test. The test should be skipped if any feature is not supported. |
+| expected | The expected behavior of the TLS implementation. Either "ACCEPT" or "REJECT" |
+| failureIsWarning | If true, getting an unexpected result on this test should just be considered a warning. See the note below. |
+
+### A note about the "failureIsWarning" tests
+
+There are a number of tests, especially in the nameconstraints test suite, which have "failureIsWarning" on tests with ambiguous expected results.
+This mostly stems from inconsistency about whether 1) implementations use the subject Common Name (CN) for hostname verification (and therefore apply name constraints checks against it), and 2) whether implementations only check nameconstraints against the hostname being verified (they _should_ be checking any SANs in the certificate for violations, but many implementations do not).
+
+For example, a test might have the common name `bad.example.com` as the subject CN and `test.localhost` as the only DNS SAN.
+If the issuing CA has `localhost` as the whitelisted DNS tree, implementations would reject this chain if they apply name constraints checks against the CN.
+This test (with `hostname="test.localhost"`) has `expected="ACCEPT"` but `failureIsWarning=true` for this reason.
+
+Modern implementations should not be using the subject CN for hostname verification, so test cases where the expected hostname is not forbidden by name constraints but is only present in the CN (and no SANs) have `expected="REJECT"` but `failureIsWarning=true`.
+
+Finally, a test might have SANs which violate name constraints but are irrelevant to the hostname being verified.
+For example, a leaf certificate with a DNS SAN of `test.localhost` and an IP SAN of `192.168.0.1` under a issuer CA with name constraints `DNS=localhost` and `IP=127.0.0.0/24` would have an expected `FAILURE` result because of the IP address name constraint violation.
+However, this test will have `failureIsWarning=true` when verifying `hostname="test.localhost"`.
+
+In short, unexpected results on such tests suggest the implementation does not have what we consider to be the "most correct" outcome, but it is not necessarily wrong.
+
+### Feature descriptions
+
+When an implementation is run with the bettertls test executor, supported features are detected during testing.
+Tests which require unsupported features are then automatically skipped.
+
+If you are exporting tests from BetterTLS for use in your project, you can use the `featureTestCases` tests to dynamically detect supported features in your project, but it will probably make more sense to look at the descriptions below and determine which features you expect to be supported.
+You can then skip any tests which require features not in your list.
+
+### nameconstraints
+
+* **NAME_CONSTRAINTS**: Whether the name constraints extension is supported at all (i.e. are intermediate CA certificates with a critical name constraints extension accepted).
+* **VALIDATE_DNS**: Does the implementation perform hostname verification when `hostname` is a DNS name?
+* **VALIDATE_IP**: Does the implementation perform hostname verification (that is, against IP address SANs) when `hostname` is a stringified IP address?
+
+### pathbuilding
+
+* **BRANCHING**: Does the implementation support path building at all? That is, when presented with an array of certificates that are not a linear chain, does the implementation discover a chain within it to a trust anchor?
+* **INVALID_REASON_xxx**: Does the implementation reject certificates for a given reason. Check out the "Path Building" section on the [bettertls website](https://bettertls.com) for more information on each of the "invalid reasons".
