@@ -14,6 +14,7 @@ func main() {
 		"run-tests":          runTests,
 		"generate-manifests": generateManifests,
 		"show-results":       showResults,
+		"export-tests":       exportTests,
 	}
 
 	var subcommand func([]string) error
