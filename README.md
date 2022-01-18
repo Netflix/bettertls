@@ -197,6 +197,7 @@ The following is an abbreviated example of what gets exported:
       "testCases": [
         {
           "id": 0,
+          "suite": "nameconstraints",
           "certificates": [
             "MII...",
             ...
@@ -232,14 +233,15 @@ The following is an abbreviated example of what gets exported:
 
 **TestCase**
 
-| Field Name | Description |
-| --- | --- |
-| id | The id of the test case. This id can be passed to the `bettertls get-test` command. |
-| certificates | The array of certificates for the test case, leaf first. Certificates are Base64-encoded DER format. |
-| hostname | The hostname that should be used by the client for subject name verification. This may be a DNS name or a stringified IP address. |
-| requiredFeatures | An array of features that the TLS implementation needs in order to run this test. The test should be skipped if any feature is not supported. |
-| expected | The expected behavior of the TLS implementation. Either "ACCEPT" or "REJECT" |
-| failureIsWarning | If true, getting an unexpected result on this test should just be considered a warning. See the note below. |
+| Field Name | Description                                                                                                                                                  |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| id | The id of the test case. This id (along with "suite" below) can be passed to the `bettertls get-test` command. Note that ids are only unique within a suite. |
+| suite | The name of the test suite this test case belongs to.                                                                                                        |
+| certificates | The array of certificates for the test case, leaf first. Certificates are Base64-encoded DER format.                                                         |
+| hostname | The hostname that should be used by the client for subject name verification. This may be a DNS name or a stringified IP address.                            |
+| requiredFeatures | An array of features that the TLS implementation needs in order to run this test. The test should be skipped if any feature is not supported.                |
+| expected | The expected behavior of the TLS implementation. Either "ACCEPT" or "REJECT"                                                                                 |
+| failureIsWarning | If true, getting an unexpected result on this test should just be considered a warning. See the note below.                                                  |
 
 ### A note about the "failureIsWarning" tests
 
