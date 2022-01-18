@@ -196,6 +196,7 @@ The following is an abbreviated example of what gets exported:
       },
       "testCases": [
         {
+          "id": 0,
           "certificates": [
             "MII...",
             ...
@@ -233,6 +234,7 @@ The following is an abbreviated example of what gets exported:
 
 | Field Name | Description |
 | --- | --- |
+| id | The id of the test case. This id can be passed to the `bettertls get-test` command. |
 | certificates | The array of certificates for the test case, leaf first. Certificates are Base64-encoded DER format. |
 | hostname | The hostname that should be used by the client for subject name verification. This may be a DNS name or a stringified IP address. |
 | requiredFeatures | An array of features that the TLS implementation needs in order to run this test. The test should be skipped if any feature is not supported. |

@@ -26,6 +26,7 @@ type suiteExport struct {
 }
 
 type testCaseExport struct {
+	Id               uint     `json:"id"`
 	Certificates     [][]byte `json:"certificates"`
 	Hostname         string   `json:"hostname"`
 	RequiredFeatures []string `json:"requiredFeatures"`
@@ -93,6 +94,7 @@ func exportTests(args []string) error {
 				return err
 			}
 			testCaseExport := new(testCaseExport)
+			testCaseExport.Id = i
 			certs, err := testCase.GetCertificates(rootCa, rootKey)
 			if err != nil {
 				return err
