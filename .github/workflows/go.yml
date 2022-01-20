@@ -1,0 +1,30 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.18beta1
+
+    - name: Build
+      working-directory: test-suites
+      run: go build -v ./...
+
+    - name: Test
+      working-directory: test-suites
+      run: |
+        if [[ -n "$(find . -name '*.go' | xargs gofmt -d)" ]]; then echo "gofmt check failed"; exit 1; fi
+        go vet ./...
+        go test -v ./...
