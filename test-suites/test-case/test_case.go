@@ -28,7 +28,7 @@ func (r ExpectedResult) String() string {
 	case EXPECTED_RESULT_SOFT_PASS:
 		return "SOFT_PASS"
 	}
-	return fmt.Sprintf("%v", r)
+	panic(fmt.Errorf("Unhandled value in ExpectedResult.String(): %v", int(r)))
 }
 func (r ExpectedResult) MarshalJSON() ([]byte, error) {
 	return json.Marshal(r.String())
