@@ -21,6 +21,7 @@ var Runners = map[string]ImplementationRunner{
 	"node":            &NodeRunner{},
 	"openssl":         &OpensslRunner{},
 	"pkijs":           &PkijsRunner{},
+	"powershell":      &PowerShellRunner{},
 	"python_requests": &PythonRequestsRunner{},
 	"rustls":          &RustlsRunner{},
 }
