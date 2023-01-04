@@ -102,6 +102,7 @@
             <p>The test executor first evaluates whether a given TLS implementation implements hostname validation. Some of the implementations under test only check if a certificate is valid and leave hostname verification to consuming applications.</p>
             <p>As a TLS implementation consumer, it is important to understand if the TLS library is doing verification for you and, if not, what subject identifiers were included in name constraints checks. As noted above, many HTTPS clients have been observed to use a TLS library that checks SANs against name constraints but then also allow the subject common name (CN) to verify the required hostname.</p>
             <p>It is therefore most useful to use this test suite against end-to-end HTTPS clients. Where that doesn't apply, make sure to pay attention to whether VALIDATE_DNS and VALIDATE_IP features are supported.</p>
+            <p>For each test definition, <code>VALID</code> means a field that matches the client hostname, <code>INVALID</code> means a field that does not match the client hostname, and <code>NONE</code> means the field is not present.</p>
         </div>
         <div class="ui bottom attached tab segment" data-tab="pathbuilding">
             <h1>What is BetterTLS: Path Building?</h1>
