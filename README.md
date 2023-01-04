@@ -147,6 +147,12 @@ $ go run ./cmd/bettertls get-test --suite pathbuilding --testId 57 | jq .
 }
 ```
 
+To get more information about multiple tests (e.g. all false-negative tests), you might do something like this:
+
+```
+$ for testID in $(go run ./cmd/bettertls show-results --resultsFile ../docs/results/go_results.json --json | jq .suiteSummary.nameconstraints.falseNegativeTests.[]) ; do go run ./cmd/bettertls get-test --suite nameconstraints --testId $testID | jq . ; done
+```
+
 # Testing additional TLS implementations
 
 ## Execting tests with the embedded test runner
