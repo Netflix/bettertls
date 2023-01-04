@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // Compatibility notes:
@@ -21,11 +22,43 @@ func (c *PowerShellRunner) Name() string {
 }
 
 func (c *PowerShellRunner) Initialize() error {
-	var err error
-	c.version, err = execAndCapture("powershell", "$PSVersionTable.PSEdition + \" \" + $PSVersionTable.PSVersion")
+	PSEdition, err := execAndCapture("powershell", "$PSVersionTable.PSEdition")
 	if err != nil {
 		return err
 	}
+	PSEdition = strings.Trim(PSEdition, "\r\n")
+
+	PSVersion, err := execAndCapture("powershell", "$PSVersionTable.PSVersion.ToString()")
+	if err != nil {
+		return err
+	}
+	PSVersion = strings.Trim(PSVersion, "\r\n")
+
+	WindowsName, err := execAndCapture("powershell", `(Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\' -Name ProductName).ProductName`)
+	if err != nil {
+		return err
+	}
+	WindowsName = strings.Trim(WindowsName, "\r\n")
+
+	WindowsVersion, err := execAndCapture("powershell", `(Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\' -Name DisplayVersion).DisplayVersion`)
+	if err != nil {
+		return err
+	}
+	WindowsVersion = strings.Trim(WindowsVersion, "\r\n")
+
+	WindowsBuild, err := execAndCapture("powershell", `(Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\' -Name CurrentBuild).CurrentBuild`)
+	if err != nil {
+		return err
+	}
+	WindowsBuild = strings.Trim(WindowsBuild, "\r\n")
+
+	WindowsUBR, err := execAndCapture("powershell", `(Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\' -Name UBR).UBR`)
+	if err != nil {
+		return err
+	}
+	WindowsUBR = strings.Trim(WindowsUBR, "\r\n")
+
+	c.version = fmt.Sprintf("%s %s (%s %s %s.%s)", PSEdition, PSVersion, WindowsName, WindowsVersion, WindowsBuild, WindowsUBR)
 
 	c.tmpDir, err = ioutil.TempDir("", "")
 	if err != nil {
