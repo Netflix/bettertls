@@ -50,7 +50,7 @@ func (r *RustlsRunner) GetVersion() string {
 func (r *RustlsRunner) RunTests(ctx *test_executor.ExecutionContext) (map[string]*test_executor.SuiteTestResults, error) {
 	return testExecDir(ctx, r.tmpDir, func(caPath string, hostname string, tlsPort uint) []string {
 		return []string{
-			"cargo", "run", "--example", "tlsclient", "--",
+			"cargo", "run", "--bin", "tlsclient-mio", "--",
 			"--cafile", caPath,
 			"-p", fmt.Sprintf("%d", tlsPort),
 			"--http", hostname,
