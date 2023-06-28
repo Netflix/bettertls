@@ -155,7 +155,7 @@ $ for testID in $(go run ./cmd/bettertls show-results --resultsFile ../docs/resu
 
 # Testing additional TLS implementations
 
-## Execting tests with the embedded test runner
+## Executing tests with the embedded test runner
 
 To add a new implementation to be tested, you will need to implement the [impltests.ImplementationRunner](test-suites/impltests/runner.go) interface.
 The easiest way to implement this interface to follow the pattern of one of the existing implementations, which invokes the TLS implementation as a separate process for each test case.
