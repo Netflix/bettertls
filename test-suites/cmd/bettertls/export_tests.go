@@ -1,15 +1,18 @@
 package main
 
 import (
+	"crypto"
+	"crypto/x509"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/Netflix/bettertls/test-suites/certutil"
 	int_set "github.com/Netflix/bettertls/test-suites/int-set"
 	test_case "github.com/Netflix/bettertls/test-suites/test-case"
 	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
-	"io"
-	"os"
 )
 
 type testExport struct {
@@ -43,24 +46,36 @@ func exportTests(args []string) error {
 	flagSet.Var(testCases, "testCase", "Export only the given test case(s) in the suite instead of all tests. Requires --suite to be specified as well. Use \"123,456-789\" syntax to include a range or set of cases.")
 	var outputPath string
 	flagSet.StringVar(&outputPath, "out", "", "Write to the given file instead of stdout.")
+	var rootCa string
+	flagSet.StringVar(&rootCa, "rootCa", "", "Use the given path as the root CA instead of generating an ephemeral root CA. If the file doesn't exist, a CA will generated and saved to the file.")
 
 	err := flagSet.Parse(args)
 	if err != nil {
 		return err
 	}
 
-	rootCa, rootKey, err := certutil.GenerateSelfSignedCert("bettertls_trust_root")
-	if err != nil {
-		return err
+	var rootCert *x509.Certificate
+	var rootKey crypto.Signer
+	if rootCa == "" {
+		rootCert, rootKey, err = certutil.GenerateSelfSignedCert("bettertls_trust_root")
+		if err != nil {
+			return err
+		}
+	} else {
+		rootCert, rootKey, err = certutil.LoadCert(rootCa)
+		if err != nil {
+			return err
+		}
 	}
-	suites, err := test_executor.BuildTestSuitesWithRootCa(rootCa, rootKey)
+
+	suites, err := test_executor.BuildTestSuitesWithRootCa(rootCert, rootKey)
 	if err != nil {
 		return err
 	}
 
 	output := new(testExport)
 	output.BetterTlsRevision = test_executor.GetBuildRevision()
-	output.TrustRoot = rootCa.Raw
+	output.TrustRoot = rootCert.Raw
 	output.Suites = make(map[string]*suiteExport)
 
 	for _, suiteName := range suites.GetProviderNames() {
@@ -97,7 +112,7 @@ func exportTests(args []string) error {
 			testCaseExport := new(testCaseExport)
 			testCaseExport.Id = i
 			testCaseExport.Suite = provider.Name()
-			certs, err := testCase.GetCertificates(rootCa, rootKey)
+			certs, err := testCase.GetCertificates(rootCert, rootKey)
 			if err != nil {
 				return err
 			}
