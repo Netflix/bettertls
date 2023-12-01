@@ -7,6 +7,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"fmt"
+
 	"github.com/Netflix/bettertls/test-suites/certutil"
 )
 
@@ -51,6 +52,7 @@ func GenerateCerts(rootCa *x509.Certificate, rootKey crypto.Signer, leafDnsName 
 				SerialNumber: certutil.RandomString(),
 			}
 			template.DNSNames = []string{leafDnsName}
+			template.ExtKeyUsage = []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth}
 		}
 
 		if isInvalid {
