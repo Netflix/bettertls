@@ -3,17 +3,15 @@ package main
 import (
 	"crypto"
 	"crypto/x509"
-	"encoding/pem"
 	"flag"
-	"fmt"
-	"github.com/Netflix/bettertls/test-suites/certutil"
-	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
-	"github.com/sirupsen/logrus"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/Netflix/bettertls/test-suites/certutil"
+	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
+	"github.com/sirupsen/logrus"
 )
 
 func runServer(args []string) error {
@@ -34,63 +32,9 @@ func runServer(args []string) error {
 			return err
 		}
 	} else {
-		if _, err := os.Stat(rootCa); os.IsNotExist(err) {
-			rootCert, rootKey, err = certutil.GenerateSelfSignedCert("bettertls_trust_root")
-			if err != nil {
-				return err
-			}
-			f, err := os.OpenFile(rootCa, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0600)
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-			err = pem.Encode(f, &pem.Block{
-				Type:  "CERTIFICATE",
-				Bytes: rootCert.Raw,
-			})
-			if err != nil {
-				return err
-			}
-			rootKeyBytes, err := x509.MarshalPKCS8PrivateKey(rootKey)
-			if err != nil {
-				return err
-			}
-			err = pem.Encode(f, &pem.Block{
-				Type:  "PRIVATE KEY",
-				Bytes: rootKeyBytes,
-			})
-			if err != nil {
-				return err
-			}
-			f.Close()
-		} else {
-			data, err := ioutil.ReadFile(rootCa)
-			if err != nil {
-				return err
-			}
-			for len(data) > 0 && (rootCert == nil || rootKey == nil) {
-				block, rest := pem.Decode(data)
-				if block == nil {
-					break
-				}
-				if block.Type == "CERTIFICATE" {
-					rootCert, err = x509.ParseCertificate(block.Bytes)
-					if err != nil {
-						return err
-					}
-				}
-				if block.Type == "PRIVATE KEY" {
-					rootKeyPV, err := x509.ParsePKCS8PrivateKey(block.Bytes)
-					if err != nil {
-						return err
-					}
-					rootKey = rootKeyPV.(crypto.Signer)
-				}
-				data = rest
-			}
-			if rootCert == nil || rootKey == nil {
-				return fmt.Errorf("rootCa file did not include certificate and key")
-			}
+		rootCert, rootKey, err = certutil.LoadCert(rootCa)
+		if err != nil {
+			return err
 		}
 	}
 
