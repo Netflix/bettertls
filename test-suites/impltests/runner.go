@@ -12,6 +12,7 @@ type ImplementationRunner interface {
 
 var Runners = map[string]ImplementationRunner{
 	"boringssl":       &BoringSslRunner{},
+	"botan":           &BotanRunner{},
 	"curl":            &CurlRunner{},
 	"envoy":           &EnvoyRunner{},
 	"gnutls":          &GnutlsRunner{},
