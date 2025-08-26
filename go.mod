@@ -1,6 +1,8 @@
 module github.com/Netflix/bettertls
 
-go 1.23
+go 1.23.0
+
+toolchain go1.23.5
 
 require (
 	github.com/golang/protobuf v1.5.2
