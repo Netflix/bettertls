@@ -9,7 +9,6 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
 	"math/big"
 	"os"
 	"time"
@@ -116,9 +115,8 @@ func LoadCert(rootCa string) (*x509.Certificate, crypto.Signer, error) {
 		if err != nil {
 			return nil, nil, err
 		}
-		f.Close()
 	} else {
-		data, err := ioutil.ReadFile(rootCa)
+		data, err := os.ReadFile(rootCa)
 		if err != nil {
 			return nil, nil, err
 		}

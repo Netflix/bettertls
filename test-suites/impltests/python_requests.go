@@ -2,10 +2,10 @@ package impltests
 
 import (
 	"fmt"
-	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
-	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
 )
 
 type PythonRequestsRunner struct {
@@ -24,12 +24,12 @@ func (c *PythonRequestsRunner) Initialize() error {
 		return err
 	}
 
-	c.tmpDir, err = ioutil.TempDir("", "")
+	c.tmpDir, err = os.MkdirTemp("", "")
 	if err != nil {
 		return err
 	}
 
-	err = ioutil.WriteFile(filepath.Join(c.tmpDir, "foo.py"), []byte(`import requests
+	err = os.WriteFile(filepath.Join(c.tmpDir, "foo.py"), []byte(`import requests
 import sys
 #from requests.packages.urllib3.contrib.pyopenssl import inject_into_urllib3
 #inject_into_urllib3()

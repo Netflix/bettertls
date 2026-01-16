@@ -2,11 +2,11 @@ package impltests
 
 import (
 	"fmt"
-	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
 )
 
 // Compatibility notes:
@@ -60,12 +60,12 @@ func (c *PowerShellRunner) Initialize() error {
 
 	c.version = fmt.Sprintf("%s %s (%s %s %s.%s)", PSEdition, PSVersion, WindowsName, WindowsVersion, WindowsBuild, WindowsUBR)
 
-	c.tmpDir, err = ioutil.TempDir("", "")
+	c.tmpDir, err = os.MkdirTemp("", "")
 	if err != nil {
 		return err
 	}
 
-	err = ioutil.WriteFile(filepath.Join(c.tmpDir, "try-tls-handshake.ps1"), []byte(`
+	err = os.WriteFile(filepath.Join(c.tmpDir, "try-tls-handshake.ps1"), []byte(`
 # Warning!  This script must be run in a fresh PowerShell process.  Otherwise,
 # PowerShell will cache any successful cert validation results, so you'll be
 # getting fictitious results.
