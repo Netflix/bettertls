@@ -2,6 +2,7 @@ package test_executor
 
 import (
 	"fmt"
+
 	int_set "github.com/Netflix/bettertls/test-suites/int-set"
 	test_case "github.com/Netflix/bettertls/test-suites/test-case"
 )
@@ -100,7 +101,7 @@ func executeTestsForProvider(ctx *ExecutionContext, provider test_case.TestCaseP
 		return nil, err
 	}
 	if !matchesExpected(sanityCheckResult, sanityCheckTestCase.ExpectedResult()) {
-		return nil, fmt.Errorf("sanity check failed")
+		return nil, fmt.Errorf("sanity check failed for suite %s: expected %v, got %v", provider.Name(), sanityCheckTestCase.ExpectedResult(), sanityCheckResult)
 	}
 
 	allFeatures := provider.GetFeatures()

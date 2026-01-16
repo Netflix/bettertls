@@ -2,13 +2,13 @@ package impltests
 
 import (
 	"encoding/base64"
-	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
+
+	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
 )
 
 type PkijsRunner struct {
@@ -26,7 +26,7 @@ func (p *PkijsRunner) Initialize() error {
 		return err
 	}
 	scriptPath := filepath.Join(tmpDir, "pkijs_test.js")
-	err = ioutil.WriteFile(scriptPath, []byte(`
+	err = os.WriteFile(scriptPath, []byte(`
 const asn1js = require('asn1js');
 const pkijs = require('pkijs');
 

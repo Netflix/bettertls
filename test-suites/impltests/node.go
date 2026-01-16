@@ -2,10 +2,10 @@ package impltests
 
 import (
 	"fmt"
-	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
-	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
 )
 
 type NodeRunner struct {
@@ -24,12 +24,12 @@ func (c *NodeRunner) Initialize() error {
 		return err
 	}
 
-	c.tmpDir, err = ioutil.TempDir("", "")
+	c.tmpDir, err = os.MkdirTemp("", "")
 	if err != nil {
 		return err
 	}
 
-	err = ioutil.WriteFile(filepath.Join(c.tmpDir, "foo.js"), []byte(`
+	err = os.WriteFile(filepath.Join(c.tmpDir, "foo.js"), []byte(`
 const fs = require('fs');
 const https = require('https');
 

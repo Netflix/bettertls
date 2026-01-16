@@ -3,11 +3,13 @@ package impltests
 import (
 	"encoding/pem"
 	"fmt"
-	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
-	"io/ioutil"
+	"io"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"time"
+
+	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
 )
 
 func execAndCapture(cmdParts ...string) (string, error) {
@@ -26,7 +28,7 @@ func execAndCaptureInDir(dir string, cmdParts ...string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	output, err := ioutil.ReadAll(stdout)
+	output, err := io.ReadAll(stdout)
 	if err != nil {
 		return "", err
 	}
@@ -66,7 +68,7 @@ func testExecDir(ctx *test_executor.ExecutionContext, workingDir string, getComm
 		return nil, err
 	}
 
-	tmpFile, err := ioutil.TempFile("", "")
+	tmpFile, err := os.CreateTemp("", "")
 	if err != nil {
 		return nil, err
 	}

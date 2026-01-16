@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
+	"io"
+
 	test_case "github.com/Netflix/bettertls/test-suites/test-case"
 	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
 	"github.com/golang/protobuf/proto"
-	"io/ioutil"
 )
 
 type resultsSummary struct {
@@ -43,7 +44,7 @@ func buildSummary(results *ImplementationTestResults, manifest *Manifest) (*resu
 		if err != nil {
 			return nil, err
 		}
-		resultsBytes, err := ioutil.ReadAll(gz)
+		resultsBytes, err := io.ReadAll(gz)
 		if err != nil {
 			return nil, err
 		}

@@ -2,11 +2,11 @@ package impltests
 
 import (
 	"fmt"
-	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	test_executor "github.com/Netflix/bettertls/test-suites/test-executor"
 )
 
 type JavaRunner struct {
@@ -28,7 +28,7 @@ func (j *JavaRunner) Initialize() error {
 	if err != nil {
 		return fmt.Errorf("failed to create a temporary directory: %v", err)
 	}
-	err = ioutil.WriteFile(filepath.Join(tmpDir, "Curl.java"), []byte(`
+	err = os.WriteFile(filepath.Join(tmpDir, "Curl.java"), []byte(`
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SNIHostName;
 import javax.net.ssl.SSLContext;
